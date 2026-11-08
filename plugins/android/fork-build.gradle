@@ -1,0 +1,29 @@
+def forkVersionCode = providers.gradleProperty("forkVersionCode")
+def forkVersionName = providers.gradleProperty("forkVersionName")
+
+android {
+    buildTypes {
+        release {
+            // CI signs the finished APK in a separate job that never runs app code.
+            signingConfig null
+            resValue "string", "app_name", "LNReader Personal"
+        }
+        preRelease {
+            resValue "string", "app_name", "LNReader Personal Preview"
+        }
+    }
+}
+
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        variant.outputs.each { output ->
+            if (forkVersionCode.isPresent()) {
+                // Use the same monotonic code for every ABI; switching APKs preserves upgrades.
+                output.versionCode.set(forkVersionCode.map { it.toInteger() })
+            }
+            if (forkVersionName.isPresent()) {
+                output.versionName.set(forkVersionName)
+            }
+        }
+    }
+}

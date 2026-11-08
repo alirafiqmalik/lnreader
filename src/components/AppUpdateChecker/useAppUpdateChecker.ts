@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import DeviceInfo from 'react-native-device-info';
 
-import { newer } from '@utils/compareVersion';
 import { MMKVStorage } from '@utils/mmkv/mmkv';
-
-import { version } from '../../../package.json';
 
 interface AppUpdate {
   isNewVersion: boolean;
@@ -30,7 +27,7 @@ export interface AppRelease {
 }
 
 const LATEST_RELEASE_URL =
-  'https://api.github.com/repos/LNReader/lnreader/releases/latest';
+  'https://api.github.com/repos/alirafiqmalik/lnreader/releases/latest';
 const LAST_UPDATE_CHECK_KEY = 'LAST_UPDATE_CHECK';
 const IGNORED_UPDATE_VERSION_KEY = 'IGNORED_UPDATE_VERSION';
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
@@ -76,8 +73,11 @@ const shouldCheckForUpdate = (): boolean => {
 };
 
 const isNewerVersion = (versionTag: string): boolean => {
-  const normalizedVersion = versionTag.replace(/[^\d.]/, '');
-  return newer(normalizedVersion, `${version}`);
+  const match = /^personal-(\d+)$/.exec(versionTag);
+  if (!match) {
+    return false;
+  }
+  return Number(match[1]) > Number(DeviceInfo.getBuildNumber());
 };
 
 export const useAppUpdateChecker = (): AppUpdate => {
