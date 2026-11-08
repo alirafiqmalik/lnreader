@@ -162,18 +162,23 @@ class PackagingTests(unittest.TestCase):
                 (source / name).write_bytes(b'apk fixture')
                 elements.append({'filters': [{'filterType': 'ABI', 'value': abi}],
                                  'versionCode': 100000001, 'outputFile': name})
-            (source / 'output-metadata.json').write_text(json.dumps({'elements': elements}))
+            metadata = {'elements': elements, 'applicationId': 'com.alirafiqmalik.lnreader'}
+            (source / 'output-metadata.json').write_text(json.dumps(metadata))
             pipeline.package(source, root / 'output', report)
             self.assertEqual(len(list((root / 'output').glob('*.apk'))), 2)
             self.assertEqual((root / 'output' / 'build-manifest.json').read_text(), report.read_text())
             elements[1]['versionCode'] += 1
-            (source / 'output-metadata.json').write_text(json.dumps({'elements': elements}))
+            (source / 'output-metadata.json').write_text(json.dumps(metadata))
             with self.assertRaisesRegex(ValueError, 'incorrect versionCode for x86_64'):
                 pipeline.package(source, root / 'bad', report)
             elements.pop()
-            (source / 'output-metadata.json').write_text(json.dumps({'elements': elements}))
+            (source / 'output-metadata.json').write_text(json.dumps(metadata))
             with self.assertRaisesRegex(ValueError, 'Missing APK'):
                 pipeline.package(source, root / 'missing', report)
+            metadata['applicationId'] = 'upstream.package'
+            (source / 'output-metadata.json').write_text(json.dumps(metadata))
+            with self.assertRaisesRegex(ValueError, 'application ID'):
+                pipeline.package(source, root / 'wrong-app', report)
 
 
 if __name__ == '__main__':
