@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "upstream": "lnreader/lnreader",
+  "fork": "alirafiqmalik/lnreader",
+  "patches": [
+    {
+      "branch": "dev/fork-android",
+      "base": "dc394e8540d44902efc17b5a35485bdb0724bb00",
+      "head": "54def73ae39b82db1a9a1acaee6606ed165023e1",
+      "pr": null
+    }
+  ],
+  "required_patch": "dev/fork-android"
+}
