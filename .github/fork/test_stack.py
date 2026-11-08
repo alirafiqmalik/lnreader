@@ -181,5 +181,44 @@ class PackagingTests(unittest.TestCase):
                 pipeline.package(source, root / 'wrong-app', report)
 
 
+class ReleaseMetadataTests(unittest.TestCase):
+    def check_metadata(self, force):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            report = root / 'manifest.json'
+            report.write_text(json.dumps({'fingerprint': 'source', 'upstream': 'base',
+                                          'composed_sha': 'composed', 'patches': [], 'retired': []}))
+            fingerprint = pipeline.hashlib.sha256(b'sourcecontroller-files').hexdigest()
+            def output(*args):
+                if 'rev-parse' in args:
+                    return 'controller-commit'
+                if 'ls-tree' in args:
+                    return 'controller-files'
+                if 'ls-remote' in args:
+                    return 'previous refs/heads/build/local'
+                return json.dumps([[{'draft': False, 'tag_name': 'personal-100000010'}]])
+            def download(args, **kwargs):
+                destination = Path(args[args.index('--dir') + 1])
+                (destination / 'build-manifest.json').write_text(json.dumps({'build_fingerprint': fingerprint}))
+            environment = {'GITHUB_REPOSITORY': 'test/fork', 'GITHUB_RUN_NUMBER': '1',
+                           'GITHUB_RUN_ID': '123', 'GITHUB_OUTPUT': str(root / 'output'),
+                           'GITHUB_STEP_SUMMARY': str(root / 'summary')}
+            with patch.object(pipeline, 'output', side_effect=output), \
+                    patch.object(pipeline.subprocess, 'run', side_effect=download), \
+                    patch.dict(pipeline.os.environ, environment):
+                pipeline.prepare(report, root, force)
+            return (root / 'output').read_text(), json.loads(report.read_text())
+
+    def test_unchanged_source_and_controller_skip_compilation(self):
+        outputs, report = self.check_metadata(False)
+        self.assertIn('should_build=false', outputs)
+        self.assertEqual(report['previous_build_sha'], 'previous')
+
+    def test_manual_build_increases_version_even_after_workflow_counter_reset(self):
+        outputs, report = self.check_metadata(True)
+        self.assertIn('should_build=true', outputs)
+        self.assertEqual(report['version_code'], 100000011)
+
+
 if __name__ == '__main__':
     unittest.main()
