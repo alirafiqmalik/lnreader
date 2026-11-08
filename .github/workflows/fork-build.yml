@@ -1,0 +1,222 @@
+name: Build Personal APK
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '37 6 * * *'
+  push:
+    branches: [fork-ci]
+    paths:
+      - '.github/fork/**'
+      - '.github/workflows/fork-build.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: personal-apk
+  cancel-in-progress: false
+
+jobs:
+  compose:
+    if: github.repository == 'alirafiqmalik/lnreader' && github.ref == 'refs/heads/fork-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      should_build: ${{ steps.metadata.outputs.should_build }}
+      composed_sha: ${{ steps.metadata.outputs.composed_sha }}
+      version_code: ${{ steps.metadata.outputs.version_code }}
+      tag: ${{ steps.metadata.outputs.tag }}
+      controller_sha: ${{ steps.controller.outputs.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: fork-ci
+          fetch-depth: 0
+          ssh-key: ${{ secrets.FORK_SYNC_SSH_KEY }}
+      - name: Record controller
+        id: controller
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Test composition
+        run: python3 .github/fork/test_stack.py
+      - name: Sync master and compose pinned features
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          upstream=$(python3 .github/fork/stack.py --repo . sync)
+          mkdir -p "$RUNNER_TEMP/fork-source"
+          python3 .github/fork/stack.py --repo . compose \
+            --base "$upstream" --output "$RUNNER_TEMP/composed" \
+            --report "$RUNNER_TEMP/fork-source/build-manifest.json" --check-prs
+          git -C "$RUNNER_TEMP/composed" bundle create "$RUNNER_TEMP/fork-source/source.bundle" HEAD
+      - name: Decide whether to build
+        id: metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          args=()
+          if [ "$EVENT_NAME" = workflow_dispatch ]; then args+=(--force); fi
+          python3 .github/fork/pipeline.py prepare --repo . \
+            --report "$RUNNER_TEMP/fork-source/build-manifest.json" "${args[@]}"
+      - name: Save exact source
+        if: steps.metadata.outputs.should_build == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: personal-source
+          path: ${{ runner.temp }}/fork-source/
+          retention-days: 14
+          if-no-files-found: error
+
+  build:
+    needs: compose
+    if: needs.compose.outputs.should_build == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      CI: 'true'
+      EXPO_NO_TELEMETRY: '1'
+      NODE_OPTIONS: --max-old-space-size=4096
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.compose.outputs.controller_sha }}
+          path: controller
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: personal-source
+          path: ${{ runner.temp }}/fork-source
+      - name: Restore exact composed source
+        env:
+          SOURCE_SHA: ${{ needs.compose.outputs.composed_sha }}
+        run: |
+          git clone "$RUNNER_TEMP/fork-source/source.bundle" app
+          git -C app checkout --detach "$SOURCE_SHA"
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+        with:
+          package_json_file: app/package.json
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '24'
+          cache: pnpm
+          cache-dependency-path: app/pnpm-lock.yaml
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install dependencies
+        working-directory: app
+        run: pnpm install --frozen-lockfile
+      - name: Generate build information
+        working-directory: app
+        env:
+          MYANIMELIST_CLIENT_ID: ${{ vars.MYANIMELIST_CLIENT_ID }}
+          ANILIST_CLIENT_ID: ${{ vars.ANILIST_CLIENT_ID }}
+        run: pnpm generate:env:release --build-type 'Personal Release' --node-env production
+      - name: Validate source
+        working-directory: app
+        run: |
+          pnpm run lint
+          pnpm run type-check
+          pnpm exec jest --runInBand
+          # Upstream has unrelated formatting failures; validate every changed source file.
+          base=$(python3 -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/fork-source/build-manifest.json"))["upstream"])')
+          git diff --name-only -z --diff-filter=ACMR "$base" HEAD -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.json' |
+            xargs -0 -r pnpm exec prettier --check
+      - name: Generate native Android project
+        working-directory: app
+        env:
+          NODE_ENV: production
+        run: pnpm exec expo prebuild --platform android --clean --no-install
+      - uses: gradle/actions/setup-gradle@0b6dd653ba04f4f93bf581ec31e66cbd7dcb644d # v4
+        with:
+          cache-read-only: false
+      - name: Compile standalone APKs
+        working-directory: app/android
+        env:
+          NODE_ENV: production
+          VERSION_CODE: ${{ needs.compose.outputs.version_code }}
+          SOURCE_SHA: ${{ needs.compose.outputs.composed_sha }}
+        run: |
+          mkdir -p app/build/intermediates/sourcemaps/react/release
+          ./gradlew :app:assembleRelease --build-cache --parallel --max-workers=2 \
+            -PreactNativeArchitectures=arm64-v8a,x86_64 -PreleaseAbiSplits=true \
+            -PforkVersionCode="$VERSION_CODE" \
+            -PforkVersionName="personal-$VERSION_CODE.${SOURCE_SHA:0:8}" --stacktrace
+      - name: Package APKs
+        run: |
+          python3 controller/.github/fork/pipeline.py package \
+            --source app/android/app/build/outputs/apk/release \
+            --report "$RUNNER_TEMP/fork-source/build-manifest.json" \
+            --destination "$RUNNER_TEMP/unsigned"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: personal-unsigned
+          path: ${{ runner.temp }}/unsigned/
+          retention-days: 14
+          if-no-files-found: error
+          compression-level: 0
+
+  publish:
+    needs: [compose, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.compose.outputs.controller_sha }}
+          fetch-depth: 0
+          ssh-key: ${{ secrets.FORK_SYNC_SSH_KEY }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: personal-source
+          path: ${{ runner.temp }}/fork-source
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: personal-unsigned
+          path: ${{ runner.temp }}/signed
+      - name: Sign and verify APKs
+        env:
+          FORK_KEYSTORE_BASE64: ${{ secrets.FORK_KEYSTORE_BASE64 }}
+          FORK_KEYSTORE_PASSWORD: ${{ secrets.FORK_KEYSTORE_PASSWORD }}
+        run: |
+          umask 077
+          signing="$RUNNER_TEMP/personal.jks"
+          trap 'rm -f "$signing"' EXIT
+          printf '%s' "$FORK_KEYSTORE_BASE64" | base64 --decode > "$signing"
+          apksigner=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
+          test -n "$apksigner"
+          for apk in "$RUNNER_TEMP/signed/"*.apk; do
+            "$apksigner" sign --ks "$signing" --ks-key-alias lnreader-personal \
+              --ks-pass env:FORK_KEYSTORE_PASSWORD --key-pass env:FORK_KEYSTORE_PASSWORD "$apk"
+            "$apksigner" verify --verbose --print-certs "$apk" > "$apk.certificate.txt"
+          done
+          cd "$RUNNER_TEMP/signed"
+          sha256sum ./*.apk > SHA256SUMS
+      - name: Publish successful build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ needs.compose.outputs.composed_sha }}
+          RELEASE_TAG: ${{ needs.compose.outputs.tag }}
+        run: |
+          git fetch "$RUNNER_TEMP/fork-source/source.bundle" HEAD
+          test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_SHA"
+          python3 .github/fork/pipeline.py notes \
+            --report "$RUNNER_TEMP/signed/build-manifest.json" --destination "$RUNNER_TEMP/notes.md"
+          # A unique immutable tag keeps every published source revision available.
+          git tag "$RELEASE_TAG" "$SOURCE_SHA"
+          git -c core.hooksPath=/dev/null push origin "refs/tags/$RELEASE_TAG"
+          gh release create "$RELEASE_TAG" "$RUNNER_TEMP/signed/"* \
+            --verify-tag --title "LNReader Personal $RELEASE_TAG" \
+            --notes-file "$RUNNER_TEMP/notes.md" --draft
+          gh release edit "$RELEASE_TAG" --draft=false --latest
+          # Only this generated branch is replaceable. Master and features are never reset.
+          old=$(python3 -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/signed/build-manifest.json"))["previous_build_sha"])')
+          git -c core.hooksPath=/dev/null push \
+            --force-with-lease="refs/heads/build/local:$old" origin "$SOURCE_SHA:refs/heads/build/local"
+          python3 .github/fork/stack.py --repo . retire-merged \
+            --report "$RUNNER_TEMP/signed/build-manifest.json"
+          echo "APK release: https://github.com/$GITHUB_REPOSITORY/releases/tag/$RELEASE_TAG" >> "$GITHUB_STEP_SUMMARY"
