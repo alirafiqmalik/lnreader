@@ -16,15 +16,16 @@ jest.mock('react-native-device-info', () => ({
   __esModule: true,
   default: {
     supportedAbis: jest.fn().mockResolvedValue(['arm64-v8a']),
+    getBuildNumber: jest.fn(() => '100'),
   },
 }));
 
 const mockRelease = {
-  tag_name: 'v9.0.0',
+  tag_name: 'personal-101',
   body: 'Release notes',
   assets: [
     {
-      name: 'LNReader-v9.0.0-arm64-v8a.apk',
+      name: 'LNReader-personal-101-arm64-v8a.apk',
       browser_download_url: 'https://example.com/lnreader.apk',
     },
   ],
@@ -48,6 +49,9 @@ describe('useAppUpdateChecker', () => {
     const { result } = renderHook(useAppUpdateChecker);
 
     await waitFor(() => expect(result.current.isNewVersion).toBe(true));
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://api.github.com/repos/alirafiqmalik/lnreader/releases/latest',
+    );
     expect(result.current.latestRelease).toEqual({
       tag_name: mockRelease.tag_name,
       body: mockRelease.body,
@@ -81,11 +85,24 @@ describe('useAppUpdateChecker', () => {
   });
 
   it('reports a newer release after an older version was ignored', async () => {
-    jest.mocked(MMKVStorage.getString).mockReturnValue('v8.0.0');
+    jest.mocked(MMKVStorage.getString).mockReturnValue('personal-99');
     mockFetchRelease();
 
     const { result } = renderHook(useAppUpdateChecker);
 
     await waitFor(() => expect(result.current.isNewVersion).toBe(true));
   });
+
+  it.each(['personal-100', 'personal-99', 'v99.0.0', 'personal-invalid'])(
+    'does not offer an installed, older, or unrelated release: %s',
+    async tag => {
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({ ...mockRelease, tag_name: tag }),
+      } as unknown as Response);
+      const { result } = renderHook(useAppUpdateChecker);
+      await waitFor(() => expect(result.current.latestRelease).toBeDefined());
+      expect(result.current.isNewVersion).toBe(false);
+    },
+  );
 });
