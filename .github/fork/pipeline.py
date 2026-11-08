@@ -61,6 +61,8 @@ def package(source, destination, report):
     data = json.loads(report.read_text())
     destination.mkdir(parents=True, exist_ok=True)
     metadata = json.loads((source / 'output-metadata.json').read_text())
+    if metadata.get('applicationId') != 'com.alirafiqmalik.lnreader':
+        raise ValueError('APK application ID does not match the personal release channel')
     for abi in ('arm64-v8a', 'x86_64'):
         matches = [e for e in metadata['elements'] if {'filterType': 'ABI', 'value': abi} in e['filters']]
         if len(matches) != 1 or matches[0]['versionCode'] != data['version_code']:
