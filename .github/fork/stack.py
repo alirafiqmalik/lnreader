@@ -50,6 +50,8 @@ def load(path):
             raise ValueError(f'{name}: PR must be a positive integer')
     if config.get('required_patch') and config['required_patch'] not in names:
         raise ValueError('The required personal Android configuration patch is missing')
+    if any(p['branch'] == config.get('required_patch') and p.get('pr') for p in config['patches']):
+        raise ValueError('The personal Android configuration must not auto-retire through a PR')
     return config
 
 
@@ -90,7 +92,9 @@ def compose(repo, config, base, destination, report, *, fetch=True, check_prs=Fa
         # Even a missing active branch is a failure, never a silently omitted feature.
         if fetch:
             git(repo, 'fetch', '--no-tags', 'origin', f"refs/heads/{patch['branch']}")
-            git(repo, 'fetch', '--no-tags', 'origin', patch['head'])
+            git(repo, 'fetch', '--no-tags', 'origin', f"refs/tags/patches/{patch['head']}")
+            if git(repo, 'rev-parse', 'FETCH_HEAD') != patch['head']:
+                raise ValueError(f"{patch['branch']}: immutable patch tag does not match pinned head")
         if not ancestor(repo, patch['base'], upstream):
             raise ValueError(f"{patch['branch']}: base is not in upstream master")
         revisions = commits(repo, patch)
@@ -205,7 +209,8 @@ def main():
         patch = {'branch': args.branch, 'base': base, 'head': head, 'pr': args.pr}
         if not ancestor(repo, base, 'upstream/master') or not commits(repo, patch):
             raise ValueError('Feature needs commits above a base contained in upstream/master')
-        git(repo, 'push', '-u', 'origin', f'{args.branch}:refs/heads/{args.branch}')
+        git(repo, 'push', '--atomic', '-u', 'origin', f'{args.branch}:refs/heads/{args.branch}',
+            f"{head}:refs/tags/patches/{head}")
         def activate(current):
             for index, old in enumerate(current['patches']):
                 if old['branch'] == args.branch:

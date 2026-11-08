@@ -1,3 +1,30 @@
+# LNReader Personal builds
+
+This fork publishes standalone APKs containing upstream LNReader plus selected
+feature branches. Download ARM64 for a tablet or x86_64 for an emulator from
+[Releases](https://github.com/alirafiqmalik/lnreader/releases).
+
+- `master` mirrors upstream exactly. Clone with `--branch master` for development.
+- `fork-ci` is the default automation branch. The ordered, pinned feature list is
+  [`.github/fork/stack.json`](.github/fork/stack.json).
+- `build/local` is generated source for the latest successfully published build.
+  Develop features on separate branches, never on this generated branch.
+- [Build Personal APK](https://github.com/alirafiqmalik/lnreader/actions/workflows/fork-build.yml)
+  runs daily, when the stack changes, or manually. Unchanged scheduled runs skip
+  compilation. Conflicts preserve the last published APK.
+
+In the local development workspace, use `bin/lndev worktree NAME`, commit the
+feature, then `bin/lndev fork activate dev/NAME`. Use `fork compose` to reproduce
+the selected source locally, `fork status` to inspect it, and `fork retire BRANCH`
+to remove a feature. Upstream PRs are optional; attach one with `activate ... --pr NUMBER`.
+The personal Android configuration patch is required and stays enabled.
+
+LNReader Personal installs alongside upstream and updates through this fork's
+release channel. Each release includes checksums and a manifest of its source
+revisions. Keep the signing key and password backed up outside Git.
+
+---
+
 <p align="center">
   <a href="https://lnreader.app">
     <img src="./.github/readme-images/icon_new.png" align="center" width="128" />

@@ -96,6 +96,20 @@ class CompositionTests(unittest.TestCase):
         self.assertEqual(result['already_present'], [feature['head']])
         self.assertEqual(result['applied'], [])
 
+    def test_immutable_pin_survives_feature_branch_advancement(self):
+        entry = self.feature('fix/pinned', 'fix.txt', 'activated\n')
+        remote = self.root / 'remote'
+        stack.run('git', 'init', '--bare', remote, stdout=stack.subprocess.PIPE)
+        stack.git(self.repo, 'remote', 'add', 'origin', str(remote))
+        stack.git(self.repo, 'push', 'origin', f"{entry['head']}:refs/tags/patches/{entry['head']}")
+        stack.git(self.repo, 'switch', 'fix/pinned')
+        self.commit('fix.txt', 'unfinished later work\n')
+        stack.git(self.repo, 'push', 'origin', 'fix/pinned')
+        stack.git(self.repo, 'switch', 'master')
+        result = stack.compose(self.repo, self.config, 'master', self.root / 'output', self.report)
+        self.assertEqual((self.root / 'output' / 'fix.txt').read_text(), 'activated\n')
+        self.assertEqual(result['applied'], [entry['head']])
+
     def test_removing_one_feature_keeps_the_other(self):
         self.feature('dev/first', 'first.txt', 'first\n')
         self.feature('dev/second', 'second.txt', 'second\n')
