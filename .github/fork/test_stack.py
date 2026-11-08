@@ -10,6 +10,10 @@ spec = importlib.util.spec_from_file_location('stack', Path(__file__).with_name(
 stack = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(stack)
 
+pipeline_spec = importlib.util.spec_from_file_location('pipeline', Path(__file__).with_name('pipeline.py'))
+pipeline = importlib.util.module_from_spec(pipeline_spec)
+pipeline_spec.loader.exec_module(pipeline)
+
 
 class CompositionTests(unittest.TestCase):
     def setUp(self):
@@ -128,6 +132,34 @@ class CompositionTests(unittest.TestCase):
             self.assertFalse(stack.merged_upstream(self.repo, self.config, entry, merged))
             pr['merged'] = False
             self.assertFalse(stack.merged_upstream(self.repo, self.config, entry, merged))
+
+
+class PackagingTests(unittest.TestCase):
+    def test_packages_both_required_abis_and_preserves_source_manifest(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / 'apk'
+            source.mkdir()
+            report = root / 'build-manifest.json'
+            report.write_text(json.dumps({'version_code': 100000001, 'tag': 'personal-100000001'}))
+            elements = []
+            for abi in ('arm64-v8a', 'x86_64'):
+                name = f'app-{abi}-release-unsigned.apk'
+                (source / name).write_bytes(b'apk fixture')
+                elements.append({'filters': [{'filterType': 'ABI', 'value': abi}],
+                                 'versionCode': 100000001, 'outputFile': name})
+            (source / 'output-metadata.json').write_text(json.dumps({'elements': elements}))
+            pipeline.package(source, root / 'output', report)
+            self.assertEqual(len(list((root / 'output').glob('*.apk'))), 2)
+            self.assertEqual((root / 'output' / 'build-manifest.json').read_text(), report.read_text())
+            elements[1]['versionCode'] += 1
+            (source / 'output-metadata.json').write_text(json.dumps({'elements': elements}))
+            with self.assertRaisesRegex(ValueError, 'incorrect versionCode for x86_64'):
+                pipeline.package(source, root / 'bad', report)
+            elements.pop()
+            (source / 'output-metadata.json').write_text(json.dumps({'elements': elements}))
+            with self.assertRaisesRegex(ValueError, 'Missing APK'):
+                pipeline.package(source, root / 'missing', report)
 
 
 if __name__ == '__main__':
