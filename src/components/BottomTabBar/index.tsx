@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Pressable, View, StyleSheet } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Badge, Text } from 'react-native-paper';
 import { ThemeColors } from '@theme/types';
 import Animated from 'react-native-reanimated';
 import Color from 'color';
@@ -28,24 +28,6 @@ function CustomBottomTabBar({
   renderIcon,
 }: CustomBottomTabBarProps) {
   const transparentBg = Color(theme.primaryContainer).fade(1).rgb().toString();
-  const getLabelText = useCallback(
-    (route: any) => {
-      if (!showLabelsInNav && route.name !== state.routeNames[state.index]) {
-        return '';
-      }
-
-      const { options } = descriptors[route.key];
-      const label =
-        typeof options.tabBarLabel === 'string'
-          ? options.tabBarLabel
-          : typeof options.title === 'string'
-          ? options.title
-          : route.name;
-
-      return label;
-    },
-    [descriptors, showLabelsInNav, state.index, state.routeNames],
-  );
 
   return (
     <View
@@ -58,7 +40,11 @@ function CustomBottomTabBar({
       ]}
     >
       {state.routes.map((route, index) => {
-        const label = getLabelText(route);
+        const { options } = descriptors[route.key];
+        const label =
+          typeof options.tabBarLabel === 'string'
+            ? options.tabBarLabel
+            : options.title ?? route.name;
         const isFocused = state.index === index;
         const showLabel = (showLabelsInNav || isFocused) && label;
 
@@ -88,6 +74,10 @@ function CustomBottomTabBar({
         return (
           <Pressable
             key={route.key}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: isFocused }}
+            accessibilityLabel={options.tabBarAccessibilityLabel ?? label}
+            testID={options.tabBarButtonTestID}
             onPress={onPress}
             onLongPress={onLongPress}
             style={styles.pressable}
@@ -118,6 +108,20 @@ function CustomBottomTabBar({
                 ]}
               />
               {renderIcon({ color: iconColor, route })}
+              {options.tabBarBadge != null ? (
+                <Badge
+                  style={[
+                    styles.badge,
+                    {
+                      backgroundColor: theme.error,
+                      color: theme.onError,
+                    },
+                    options.tabBarBadgeStyle,
+                  ]}
+                >
+                  {options.tabBarBadge}
+                </Badge>
+              ) : null}
             </View>
 
             {/* Label */}
@@ -174,6 +178,11 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     borderRadius: 16,
+  },
+  badge: {
+    position: 'absolute',
+    top: -4,
+    right: 4,
   },
   label: {
     height: 16,
