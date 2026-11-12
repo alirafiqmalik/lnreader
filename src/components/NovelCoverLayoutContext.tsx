@@ -36,10 +36,10 @@ export const useNovelCoverLayoutValue = (
   return useMemo(() => {
     const numColumns = globalSearch
       ? 3
-      : orientation === 'landscape'
-      ? 6
       : displayMode === DisplayModes.List
       ? 1
+      : orientation === 'landscape'
+      ? 6
       : novelsPerRow;
     const coverWidth = globalSearch ? width / 3 - 16 : undefined;
     const coverHeight = (coverWidth ?? width / numColumns) * (4 / 3);
