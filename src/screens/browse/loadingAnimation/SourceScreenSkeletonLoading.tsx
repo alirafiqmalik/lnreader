@@ -3,9 +3,8 @@ import { View, StyleSheet, useWindowDimensions } from 'react-native';
 import { ThemeColors } from '@theme/types';
 import useLoadingColors from '@utils/useLoadingColors';
 import LoadingNovel from '@screens/browse/loadingAnimation/LoadingNovel';
-import { useLibrarySettings } from '@hooks/persisted';
+import { useNovelCoverLayoutValue } from '@components/NovelCoverLayoutContext';
 import { DisplayModes } from '@screens/library/constants/constants';
-import { useDeviceOrientation } from '@hooks';
 
 interface Props {
   theme: ThemeColors;
@@ -19,21 +18,9 @@ const SourceScreenSkeletonLoading: React.FC<Props> = ({
   const [highlightColor, backgroundColor, disableLoadingAnimations] =
     useLoadingColors(theme);
 
-  const { displayMode = DisplayModes.Comfortable, novelsPerRow = 3 } =
-    useLibrarySettings();
+  const { displayMode, numColumns } = useNovelCoverLayoutValue();
 
   const window = useWindowDimensions();
-  const orientation = useDeviceOrientation();
-
-  const numColumns = useMemo(
-    () =>
-      displayMode === DisplayModes.List
-        ? 1
-        : orientation === 'landscape'
-        ? 6
-        : novelsPerRow,
-    [displayMode, orientation, novelsPerRow],
-  );
 
   const [pictureHeight, pictureWidth] = useMemo(() => {
     const width = (window.width - 12 - 9.6 * numColumns) / numColumns;
