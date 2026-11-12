@@ -8,6 +8,12 @@
       "base": "dc394e8540d44902efc17b5a35485bdb0724bb00",
       "head": "b40e6e7e1962b7629312358c2855c4217fc7e969",
       "pr": null
+    },
+    {
+      "branch": "dev/tablet-ui",
+      "base": "dc394e8540d44902efc17b5a35485bdb0724bb00",
+      "head": "9a82c315512575abdad225547d62bf434c06a01c",
+      "pr": null
     }
   ],
   "required_patch": "dev/fork-android"
