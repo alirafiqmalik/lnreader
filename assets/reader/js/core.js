@@ -861,13 +861,21 @@ window.addEventListener('load', () => {
     }
     return 'center';
   };
+  let lastLinkTap = -Infinity;
   document.onclick = e => {
     // A link opens its target (in the app for novel links), so the tap must not
     // also toggle the reader controls or turn the page.
-    if (
-      Date.now() < pageReader.ignoreClickUntil ||
-      e.target.closest('a[href]')
-    ) {
+    if (e.target.closest('a[href]')) {
+      // While the first tap opens the novel the app can answer the WebView too
+      // late, and the WebView then loads the site in place of the chapter.
+      if (Date.now() - lastLinkTap < 1000) {
+        e.preventDefault();
+      } else {
+        lastLinkTap = Date.now();
+      }
+      return;
+    }
+    if (Date.now() < pageReader.ignoreClickUntil) {
       return;
     }
     const { clientX, clientY } = e;
