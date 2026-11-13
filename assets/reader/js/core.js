@@ -862,7 +862,12 @@ window.addEventListener('load', () => {
     return 'center';
   };
   document.onclick = e => {
-    if (Date.now() < pageReader.ignoreClickUntil) {
+    // A link opens its target (in the app for novel links), so the tap must not
+    // also toggle the reader controls or turn the page.
+    if (
+      Date.now() < pageReader.ignoreClickUntil ||
+      e.target.closest('a[href]')
+    ) {
       return;
     }
     const { clientX, clientY } = e;

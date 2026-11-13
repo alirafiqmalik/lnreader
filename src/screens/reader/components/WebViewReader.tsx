@@ -7,12 +7,15 @@ import {
 } from 'react-native';
 import WebView from 'react-native-webview';
 import * as Linking from 'expo-linking';
+import { useNavigation } from '@react-navigation/native';
 import color from 'color';
 
 import { useTheme } from '@hooks/persisted';
 import { getString } from '@i18n/translations';
 
 import { getPlugin } from '@plugins/pluginManager';
+import { ChapterScreenProps } from '@navigators/types';
+import { resolveNovelLink } from '@services/share/resolveSharedUrl';
 import { MMKVStorage, getMMKVObject } from '@utils/mmkv/mmkv';
 import {
   CHAPTER_GENERAL_SETTINGS,
@@ -144,6 +147,23 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
     refetch,
   } = useChapterContext();
   const theme = useTheme();
+  const navigation = useNavigation<ChapterScreenProps['navigation']>();
+
+  const openNovelLink = (url: string): boolean => {
+    const link = resolveNovelLink(url);
+    if (!link) {
+      return false;
+    }
+    const params = { name: '', cover: null, ...link };
+    if (link.pluginId === novel.pluginId && link.path === novel.path) {
+      navigation.push('Novel', params);
+    } else {
+      // NovelContextProvider wraps the whole ReaderStack, so another novel
+      // needs its own stack; going back then returns to this chapter.
+      navigation.push('ReaderStack', { screen: 'Novel', params });
+    }
+    return true;
+  };
   const initialReaderSettings = useMemo(
     () => ({
       ...initialChapterReaderSettings,
@@ -471,7 +491,14 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
             refetch();
             return false;
           }
-          return true;
+          return !openNovelLink(url);
+        }}
+        // Handling target="_blank" here replaces Android's default of handing
+        // the URL to the browser, so other links are still sent there.
+        onOpenWindow={({ nativeEvent: { targetUrl } }) => {
+          if (!openNovelLink(targetUrl)) {
+            void Linking.openURL(targetUrl);
+          }
         }}
         onLoadEnd={() => {
           webViewRef.current?.injectJavaScript(
