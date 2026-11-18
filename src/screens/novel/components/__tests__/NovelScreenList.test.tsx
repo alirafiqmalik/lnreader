@@ -76,10 +76,18 @@ jest.mock('../ChapterItem', () => {
   const React = require('react');
   const { Pressable, Text, View } = require('react-native');
 
-  return ({ chapter, onDeleteChapter }: any) =>
+  return ({ chapter, onDeleteChapter, onSelectPress }: any) =>
     React.createElement(
       View,
       { testID: `chapter-item-${chapter.id}` },
+      React.createElement(
+        Pressable,
+        {
+          testID: `open-chapter-${chapter.id}`,
+          onPress: () => onSelectPress(chapter),
+        },
+        React.createElement(Text, null, 'open'),
+      ),
       React.createElement(
         Pressable,
         {
@@ -299,6 +307,16 @@ describe('NovelScreenList (task 12 context boundary cutover)', () => {
     mockDownloadQueue = [];
   });
 
+  it('opens a row inside ReaderStack without replacing its novel params', () => {
+    wireStoreSelectors(createStore());
+    renderList();
+    fireEvent.press(screen.getByTestId('open-chapter-1'));
+    expect(navigation.navigate).toHaveBeenCalledWith('Chapter', {
+      novel: baseNovel,
+      chapter: baseChapter,
+    });
+  });
+
   it('uses novelStore selector actions', () => {
     const store = createStore();
     wireStoreSelectors(store);
@@ -431,9 +449,9 @@ describe('NovelScreenList (task 12 context boundary cutover)', () => {
 
     fireEvent.press(screen.getByTestId('continue-reading-fab'));
 
-    expect(navigation.navigate).toHaveBeenCalledWith('ReaderStack', {
-      screen: 'Chapter',
-      params: { novel: baseNovel, chapter: lastRead },
+    expect(navigation.navigate).toHaveBeenCalledWith('Chapter', {
+      novel: baseNovel,
+      chapter: lastRead,
     });
   });
 });
