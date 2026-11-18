@@ -10,13 +10,17 @@ type LinkActions = {
   refresh(): void;
 };
 
-export function handleReaderLink(data: unknown, actions: LinkActions) {
+export function handleReaderLink(
+  data: unknown,
+  actions: LinkActions,
+  source: 'page' | 'native' | 'window' = 'page',
+) {
   if (
     !data ||
     typeof data !== 'object' ||
     !('url' in data) ||
     typeof data.url !== 'string' ||
-    !/^https?:/i.test(data.url)
+    (source === 'page' && !/^https?:/i.test(data.url))
   ) {
     return;
   }
@@ -26,7 +30,20 @@ export function handleReaderLink(data: unknown, actions: LinkActions) {
   } else if (isChapterRefreshUrl(url)) {
     actions.refresh();
   } else if (!actions.openNovel(url)) {
-    if ('target' in data && data.target === '_blank') actions.openExternal(url);
-    else actions.inject(`window.location.href = ${JSON.stringify(url)}; true;`);
+    const target =
+      'target' in data && typeof data.target === 'string'
+        ? data.target.toLowerCase()
+        : '';
+    if (
+      source === 'window' ||
+      !['', '_self', '_parent', '_top'].includes(target)
+    ) {
+      actions.openExternal(url);
+    } else if (source === 'page') {
+      actions.inject(`window.location.href = ${JSON.stringify(url)}; true;`);
+    } else {
+      return true;
+    }
   }
+  return false;
 }
