@@ -306,6 +306,7 @@ export const ChapterContent = ({
         <ChapterLoadingScreen />
       ) : (
         <WebViewReader
+          chromeHidden={hidden || searchVisible}
           onPress={handleReaderPress}
           onTouchStart={handleReaderTouchStart}
           onSearchResult={setSearchResult}
