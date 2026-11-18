@@ -224,7 +224,7 @@ export const ChapterContent = ({
     }
 
     webViewRef.current?.injectJavaScript(
-      buildReaderChromeScript(hidden, searchVisible),
+      buildReaderChromeScript(false, searchVisible),
     );
   }, [hidden, searchVisible, webViewRef]);
 
