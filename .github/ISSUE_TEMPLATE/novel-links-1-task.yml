@@ -1,0 +1,30 @@
+name: "Reader links: task"
+description: Work for the recommendation link feature (open a novel from a link in a chapter).
+labels: ["novel-links", "type: feature"]
+projects: ["alirafiqmalik/3"]
+body:
+  - type: markdown
+    attributes:
+      value: Fork issues are public. Do not paste device serials, account data, raw logs, or screenshots that show personal data.
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What must change, and why.
+    validations:
+      required: true
+  - type: textarea
+    id: done-when
+    attributes:
+      label: Done when
+      description: The checks that show that the work is complete.
+      placeholder: |
+        - Jest test for ...
+        - Phone walk passes
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Files, links to other issues, and open questions.

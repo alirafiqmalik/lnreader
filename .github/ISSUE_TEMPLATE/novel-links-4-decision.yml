@@ -1,0 +1,38 @@
+name: "Reader links: decision or proposal"
+description: A choice to make, or a change to propose upstream, for the recommendation link feature.
+labels: ["novel-links", "type: decision"]
+projects: ["alirafiqmalik/3"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fork issues are public. Do not paste device serials, account data, raw logs, or screenshots that show personal data.
+        For a proposal that needs no decision now, change the label to `type: proposal`.
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What must be decided, and why now.
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options
+      placeholder: |
+        - A: ... (cost, risk)
+        - B: ... (cost, risk)
+    validations:
+      required: true
+  - type: textarea
+    id: recommendation
+    attributes:
+      label: Recommendation
+  - type: dropdown
+    id: target
+    attributes:
+      label: Target
+      options:
+        - Fork patch
+        - Upstream app (lnreader/lnreader)
+        - Upstream plugins (lnreader/lnreader-plugins)

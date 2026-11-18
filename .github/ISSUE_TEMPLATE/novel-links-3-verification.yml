@@ -1,0 +1,58 @@
+name: "Reader links: verification run"
+description: A test or verification run for the recommendation link feature.
+labels: ["novel-links", "type: test"]
+projects: ["alirafiqmalik/3"]
+body:
+  - type: markdown
+    attributes:
+      value: Fork issues are public. Do not paste device serials, account data, raw logs, or screenshots that show personal data.
+  - type: textarea
+    id: scope
+    attributes:
+      label: What to verify
+    validations:
+      required: true
+  - type: dropdown
+    id: method
+    attributes:
+      label: Method
+      multiple: true
+      options:
+        - Jest
+        - Phone walk (dev/phone_walk.py)
+        - Manual steps
+        - Memory or performance measurement
+    validations:
+      required: true
+  - type: dropdown
+    id: build
+    attributes:
+      label: Build
+      options:
+        - Debug build (Metro)
+        - Personal release APK
+        - Upstream release (baseline)
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      options:
+        - Phone (debug app only)
+        - Tablet
+        - Emulator
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps or command
+      render: shell
+  - type: textarea
+    id: pass-when
+    attributes:
+      label: Pass when
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Result
+      description: Fill in after the run. Give the commit, the counts, and the walk run ID.

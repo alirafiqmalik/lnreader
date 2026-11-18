@@ -1,0 +1,56 @@
+name: "Reader links: bug"
+description: A defect found while using or testing the recommendation link feature.
+labels: ["novel-links", "type: fix"]
+projects: ["alirafiqmalik/3"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fork issues are public. Do not paste device serials, account data, raw logs, or screenshots that show personal data.
+        If upstream has the same defect, change the label to `type: upstream-bug`.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What happens, and what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps
+      placeholder: |
+        1. Open a chapter with a Royal Road link in the author note.
+        2. Tap the link.
+        3. Press Back.
+    validations:
+      required: true
+  - type: dropdown
+    id: upstream
+    attributes:
+      label: Also in upstream?
+      description: Do the same steps on the upstream build, without the feature.
+      options:
+        - Not checked yet
+        - "No: the feature causes it"
+        - "Yes: upstream has it too"
+    validations:
+      required: true
+  - type: dropdown
+    id: build
+    attributes:
+      label: Build
+      options:
+        - Debug build (Metro)
+        - Personal release APK
+        - Upstream release
+  - type: input
+    id: commit
+    attributes:
+      label: Branch and commit
+      placeholder: feature/add-recommendations-from-reader @ 2495295a
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Short log lines, a walk run ID, or a cropped screenshot.
