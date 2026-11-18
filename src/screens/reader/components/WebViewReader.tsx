@@ -34,6 +34,7 @@ import { Dialog } from '@components/Dialog';
 import { TextInput } from 'react-native-paper';
 import useCustomCode from './Hooks/useCustomCode';
 import useTextModifications from './Hooks/useTextModifications';
+import { buildReaderChromeScript } from '../utils/buildReaderChromeScript';
 import { handleReaderLink } from '../utils/handleReaderLink';
 
 export type WebViewPostEvent = {
@@ -45,7 +46,7 @@ export type WebViewPostEvent = {
 };
 
 type WebViewReaderProps = {
-  chromeHidden: boolean;
+  searchVisibleRef: React.MutableRefObject<boolean>;
   onPress(): void;
   onTouchStart?(): void;
   onSearchResult(result: ReaderSearchResult): void;
@@ -128,7 +129,7 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
   onTouchStart,
   onSearchResult,
   searchTextRef,
-  chromeHidden,
+  searchVisibleRef,
 }) => {
   const {
     novel,
@@ -142,6 +143,7 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
     onUserInteraction,
     isTTSReadingRef,
     refetch,
+    hiddenRef,
   } = useChapterContext();
   const theme = useTheme();
   const openNovelLink = useNovelLinkNavigation(novel);
@@ -484,12 +486,12 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
         }}
         onLoadEnd={() => {
           // A new document resets page state even when the app controls stay open.
-          webViewRef.current?.injectJavaScript(`
-            if (window.reader?.hidden) {
-              window.reader.hidden.val = ${chromeHidden};
-            }
-            true;
-          `);
+          webViewRef.current?.injectJavaScript(
+            buildReaderChromeScript(
+              hiddenRef.current,
+              searchVisibleRef.current,
+            ),
+          );
           webViewRef.current?.injectJavaScript(
             `if (window.reader && window.reader.batteryLevel) {
             window.reader.batteryLevel.val = ${lastKnownBatteryLevel};
