@@ -11,7 +11,7 @@ import tempfile
 
 CONTROL = 'fork-ci'
 MANIFEST = '.github/fork/stack.json'
-BRANCH = re.compile(r'(dev|feat|fix|perf|refactor|chore)/[a-z0-9][a-z0-9._/-]*$')
+BRANCH = re.compile(r'(dev|feat|feature|fix|perf|refactor|chore)/[a-z0-9][a-z0-9._/-]*$')
 SHA = re.compile(r'[0-9a-f]{40}$')
 IDENTITY = {'GIT_COMMITTER_NAME': 'LNReader Fork',
             'GIT_COMMITTER_EMAIL': '41898282+github-actions[bot]@users.noreply.github.com'}
@@ -196,7 +196,7 @@ def main():
         print(upstream)
     elif args.command == 'activate':
         if not BRANCH.fullmatch(args.branch) or '..' in args.branch:
-            raise ValueError('Use a dev/, feat/, fix/, perf/, refactor/ or chore/ branch')
+            raise ValueError('Use a dev/, feat/, feature/, fix/, perf/, refactor/ or chore/ branch')
         for record in git(repo, 'worktree', 'list', '--porcelain').split('\n\n'):
             lines = record.splitlines()
             if f'branch refs/heads/{args.branch}' in lines:

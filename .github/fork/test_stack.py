@@ -148,6 +148,14 @@ class CompositionTests(unittest.TestCase):
             self.assertFalse(stack.merged_upstream(self.repo, self.config, entry, merged))
 
 
+class BranchNameTests(unittest.TestCase):
+    def test_accepts_feature_prefix_and_rejects_unknown_prefixes(self):
+        self.assertTrue(stack.BRANCH.fullmatch('feature/add-recommendations-from-reader'))
+        self.assertTrue(stack.BRANCH.fullmatch('dev/novel-links'))
+        self.assertIsNone(stack.BRANCH.fullmatch('features/add-recommendations-from-reader'))
+        self.assertIsNone(stack.BRANCH.fullmatch('wip/add-recommendations-from-reader'))
+
+
 class PackagingTests(unittest.TestCase):
     def test_packages_both_required_abis_and_preserves_source_manifest(self):
         with tempfile.TemporaryDirectory() as temporary:
