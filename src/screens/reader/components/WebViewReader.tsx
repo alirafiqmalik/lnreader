@@ -34,11 +34,6 @@ import { Dialog } from '@components/Dialog';
 import { TextInput } from 'react-native-paper';
 import useCustomCode from './Hooks/useCustomCode';
 import useTextModifications from './Hooks/useTextModifications';
-import {
-  isChapterRefreshUrl,
-  isPluginIssueReportUrl,
-} from '../utils/sanitizeChapterText';
-
 import { handleReaderLink } from '../utils/handleReaderLink';
 
 export type WebViewPostEvent = {
@@ -150,6 +145,19 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
   } = useChapterContext();
   const theme = useTheme();
   const openNovelLink = useNovelLinkNavigation(novel);
+  const routeLink = (data: unknown, source: 'page' | 'native' | 'window') =>
+    handleReaderLink(
+      data,
+      {
+        openNovel: openNovelLink,
+        openExternal: url => {
+          void Linking.openURL(url);
+        },
+        inject: script => webViewRef.current?.injectJavaScript(script),
+        refresh: refetch,
+      },
+      source,
+    );
   const initialReaderSettings = useMemo(
     () => ({
       ...initialChapterReaderSettings,
@@ -468,23 +476,11 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
         showsVerticalScrollIndicator={false}
         javaScriptEnabled={true}
         webviewDebuggingEnabled={__DEV__}
-        onShouldStartLoadWithRequest={({ url }) => {
-          if (isPluginIssueReportUrl(url)) {
-            void Linking.openURL(url);
-            return false;
-          }
-          if (isChapterRefreshUrl(url)) {
-            refetch();
-            return false;
-          }
-          return !openNovelLink(url);
-        }}
-        // Handling target="_blank" here replaces Android's default of handing
-        // the URL to the browser, so other links are still sent there.
+        onShouldStartLoadWithRequest={({ url }) =>
+          routeLink({ url }, 'native') ?? false
+        }
         onOpenWindow={({ nativeEvent: { targetUrl } }) => {
-          if (!openNovelLink(targetUrl)) {
-            void Linking.openURL(targetUrl);
-          }
+          routeLink({ url: targetUrl }, 'window');
         }}
         onLoadEnd={() => {
           // A new document resets page state even when the app controls stay open.
@@ -532,14 +528,7 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
           const event: WebViewPostEvent = JSON.parse(ev.nativeEvent.data);
           switch (event.type) {
             case 'link':
-              handleReaderLink(event.data, {
-                openNovel: openNovelLink,
-                openExternal: url => {
-                  void Linking.openURL(url);
-                },
-                inject: script => webViewRef.current?.injectJavaScript(script),
-                refresh: refetch,
-              });
+              routeLink(event.data, 'page');
               break;
             case 'tts-queue': {
               const payload = event.data as

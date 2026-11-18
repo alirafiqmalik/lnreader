@@ -4,6 +4,7 @@ import { runInNewContext } from 'node:vm';
 
 type TapEvent = {
   target: { closest: (selector: string) => unknown };
+  defaultPrevented: boolean;
   clientX: number;
   clientY: number;
   preventDefault: jest.Mock;
@@ -44,12 +45,14 @@ const loadClickHandler = () => {
     onLink: boolean,
     target = '',
     href = 'https://royalroad.com/fiction/123',
+    defaultPrevented = false,
   ) => {
     const hash = href.includes('#') ? href.slice(href.indexOf('#')) : '';
     const event: TapEvent = {
       target: {
         closest: () => (onLink ? { href, target, hash } : null),
       },
+      defaultPrevented,
       clientX: 200,
       clientY: 400,
       preventDefault: jest.fn(),
@@ -127,4 +130,27 @@ it('sends a fragment link to another page to the app', () => {
     type: 'link',
     data: { url, target: '' },
   });
+});
+
+it('keeps an empty fragment in the document', () => {
+  const { tap, post } = loadClickHandler();
+  expect(
+    tap(true, '', 'https://www.royalroad.com/#').preventDefault,
+  ).not.toHaveBeenCalled();
+  expect(post).not.toHaveBeenCalled();
+});
+it('respects a cancelled click', () => {
+  const { tap, post } = loadClickHandler();
+  tap(true, '', 'https://royalroad.com/fiction/123', true);
+  expect(post).not.toHaveBeenCalled();
+});
+it.each([
+  'lnreader://refresh-chapter',
+  'mailto:author@example.com',
+  'intent:example',
+])('debounces %s', url => {
+  const { tap, clock } = loadClickHandler();
+  expect(tap(true, '', url).preventDefault).not.toHaveBeenCalled();
+  clock.now += 300;
+  expect(tap(true, '', url).preventDefault).toHaveBeenCalled();
 });
