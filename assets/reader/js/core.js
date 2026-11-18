@@ -865,13 +865,21 @@ window.addEventListener('load', () => {
   document.onclick = e => {
     // A link opens its target (in the app for novel links), so the tap must not
     // also toggle the reader controls or turn the page.
-    if (e.target.closest('a[href]')) {
-      // While the first tap opens the novel the app can answer the WebView too
-      // late, and the WebView then loads the site in place of the chapter.
-      if (Date.now() - lastLinkTap < 1000) {
+    const link = e.target.closest('a[href]');
+    if (link) {
+      // A link to a place in this page (a footnote) scrolls here without the app.
+      const inPage =
+        !!link.hash && link.href.split('#')[0] === location.href.split('#')[0];
+      if (/^https?:/i.test(link.href) && !inPage) {
+        // Cancel in the page before Android starts its timed native callback.
         e.preventDefault();
-      } else {
-        lastLinkTap = Date.now();
+        if (Date.now() - lastLinkTap >= 1000) {
+          lastLinkTap = Date.now();
+          reader.post({
+            type: 'link',
+            data: { url: link.href, target: link.target },
+          });
+        }
       }
       return;
     }

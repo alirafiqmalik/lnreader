@@ -34,13 +34,22 @@ const loadClickHandler = () => {
       generalSettings: { val: { pageReader: false, tapToScroll: false } },
     },
     window: {},
+    // An online chapter is loaded with the plugin site as its base URL.
+    location: { href: 'https://www.royalroad.com/' },
   };
 
   runInNewContext(core.slice(start, end + closing.length), context);
 
-  const tap = (onLink: boolean) => {
+  const tap = (
+    onLink: boolean,
+    target = '',
+    href = 'https://royalroad.com/fiction/123',
+  ) => {
+    const hash = href.includes('#') ? href.slice(href.indexOf('#')) : '';
     const event: TapEvent = {
-      target: { closest: () => (onLink ? {} : null) },
+      target: {
+        closest: () => (onLink ? { href, target, hash } : null),
+      },
       clientX: 200,
       clientY: 400,
       preventDefault: jest.fn(),
@@ -56,8 +65,11 @@ describe('reader link taps', () => {
   it('lets a link open without toggling the reader controls', () => {
     const { tap, post } = loadClickHandler();
 
-    expect(tap(true).preventDefault).not.toHaveBeenCalled();
-    expect(post).not.toHaveBeenCalled();
+    expect(tap(true).preventDefault).toHaveBeenCalled();
+    expect(post).toHaveBeenCalledWith({
+      type: 'link',
+      data: { url: 'https://royalroad.com/fiction/123', target: '' },
+    });
   });
 
   it('still toggles the controls for a tap on text', () => {
@@ -71,20 +83,48 @@ describe('reader link taps', () => {
   // The app may answer the second load request too late, and the WebView then
   // loads the linked site in place of the chapter.
   it('stops a second tap while the first one opens the link', () => {
-    const { tap, clock } = loadClickHandler();
+    const { tap, clock, post } = loadClickHandler();
 
     tap(true);
     clock.now += 300;
 
     expect(tap(true).preventDefault).toHaveBeenCalled();
+    expect(post).toHaveBeenCalledTimes(1);
   });
 
   it('opens a link again after the double-tap window', () => {
-    const { tap, clock } = loadClickHandler();
+    const { tap, clock, post } = loadClickHandler();
 
     tap(true);
     clock.now += 2000;
 
-    expect(tap(true).preventDefault).not.toHaveBeenCalled();
+    expect(tap(true).preventDefault).toHaveBeenCalled();
+    expect(post).toHaveBeenCalledTimes(2);
+  });
+});
+
+it('posts a blank-target activation from a descendant image', () => {
+  const { tap, post } = loadClickHandler();
+  expect(tap(true, '_blank').preventDefault).toHaveBeenCalled();
+  expect(post).toHaveBeenCalledWith({
+    type: 'link',
+    data: { url: 'https://royalroad.com/fiction/123', target: '_blank' },
+  });
+});
+
+it('lets a footnote link in the page scroll without the app', () => {
+  const { tap, post } = loadClickHandler();
+  const event = tap(true, '', 'https://www.royalroad.com/#note-1');
+  expect(event.preventDefault).not.toHaveBeenCalled();
+  expect(post).not.toHaveBeenCalled();
+});
+
+it('sends a fragment link to another page to the app', () => {
+  const { tap, post } = loadClickHandler();
+  const url = 'https://www.royalroad.com/fiction/123#chapters';
+  expect(tap(true, '', url).preventDefault).toHaveBeenCalled();
+  expect(post).toHaveBeenCalledWith({
+    type: 'link',
+    data: { url, target: '' },
   });
 });
