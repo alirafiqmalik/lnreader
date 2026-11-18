@@ -48,6 +48,7 @@ export type WebViewPostEvent = {
 };
 
 type WebViewReaderProps = {
+  chromeHidden: boolean;
   onPress(): void;
   onTouchStart?(): void;
   onSearchResult(result: ReaderSearchResult): void;
@@ -130,6 +131,7 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
   onTouchStart,
   onSearchResult,
   searchTextRef,
+  chromeHidden,
 }) => {
   const {
     novel,
@@ -483,6 +485,13 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
           }
         }}
         onLoadEnd={() => {
+          // A new document resets page state even when the app controls stay open.
+          webViewRef.current?.injectJavaScript(`
+            if (window.reader?.hidden) {
+              window.reader.hidden.val = ${chromeHidden};
+            }
+            true;
+          `);
           webViewRef.current?.injectJavaScript(
             `if (window.reader && window.reader.batteryLevel) {
             window.reader.batteryLevel.val = ${lastKnownBatteryLevel};
