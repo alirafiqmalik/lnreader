@@ -39,6 +39,8 @@ import {
   isPluginIssueReportUrl,
 } from '../utils/sanitizeChapterText';
 
+import { handleReaderLink } from '../utils/handleReaderLink';
+
 export type WebViewPostEvent = {
   type: string;
   data?: unknown;
@@ -529,6 +531,16 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
           __DEV__ && onLogMessage(ev);
           const event: WebViewPostEvent = JSON.parse(ev.nativeEvent.data);
           switch (event.type) {
+            case 'link':
+              handleReaderLink(event.data, {
+                openNovel: openNovelLink,
+                openExternal: url => {
+                  void Linking.openURL(url);
+                },
+                inject: script => webViewRef.current?.injectJavaScript(script),
+                refresh: refetch,
+              });
+              break;
             case 'tts-queue': {
               const payload = event.data as
                 | { queue?: unknown; startIndex?: unknown }
