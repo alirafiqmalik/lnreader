@@ -1,0 +1,742 @@
+[
+  {
+    "name": "real rr-fiction 1",
+    "provenance": "real",
+    "form": "rr-fiction",
+    "href": "https://www.royalroad.com/fiction/133292/brain-eating-amoeba-girl-evolution",
+    "sourceChapter": "https://www.royalroad.com/fiction/112921/beast-be-gone-gamelit-comedy-satire-part-1-complete/chapter/2663016/chapter-31-throne-back-into-action",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/112921/beast-be-gone-gamelit-comedy-satire-part-1-complete/chapter/2663016/chapter-31-throne-back-into-action",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": true,
+        "text": ""
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/112921/beast-be-gone-gamelit-comedy-satire-part-1-complete/chapter/2663016/chapter-31-throne-back-into-action",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "Brain Eating Amoeba Girl Evolution"
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/133292"
+    }
+  },
+  {
+    "name": "real rr-fiction 2",
+    "provenance": "real",
+    "form": "rr-fiction",
+    "href": "https://www.royalroad.com/fiction/104434/the-elf-who-would-become-a-dragon-a-cosy-dark",
+    "sourceChapter": "https://www.royalroad.com/fiction/112921/beast-be-gone-gamelit-comedy-satire-part-1-complete/chapter/2672627/chapter-32-epilogue",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/112921/beast-be-gone-gamelit-comedy-satire-part-1-complete/chapter/2672627/chapter-32-epilogue",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": true,
+        "text": ""
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/112921/beast-be-gone-gamelit-comedy-satire-part-1-complete/chapter/2672627/chapter-32-epilogue",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "The Elf Who Would Become A Dragon"
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/112921/beast-be-gone-gamelit-comedy-satire-part-1-complete/chapter/2672627/chapter-32-epilogue",
+        "section": "author-note",
+        "target": null,
+        "rel": "ugc nofollow",
+        "img": false,
+        "text": "Read Now"
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/104434"
+    }
+  },
+  {
+    "name": "real rr-chapter 3",
+    "provenance": "real",
+    "form": "rr-chapter",
+    "href": "https://www.royalroad.com/fiction/104434/the-elf-who-would-become-a-dragon-a-cosy-dark/chapter/2034542/prelude-and-chapter-1-the-frog-and-the-toad",
+    "sourceChapter": "https://www.royalroad.com/fiction/104434/the-elf-who-would-become-a-dragon-story-complete/chapter/2458061/the-elf-who-would-become-a-dragon-full-cover",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/104434/the-elf-who-would-become-a-dragon-story-complete/chapter/2458061/the-elf-who-would-become-a-dragon-full-cover",
+        "section": "chapter",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": true,
+        "text": ""
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/104434"
+    },
+    "decision": "depends on user decision: chapter link -> novel or chapter"
+  },
+  {
+    "name": "real rr-fiction 4",
+    "provenance": "real",
+    "form": "rr-fiction",
+    "href": "https://www.royalroad.com/fiction/200757",
+    "sourceChapter": "https://www.royalroad.com/fiction/190085/save-the-heroine/chapter/4350022/chapter-twenty-city",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/190085/save-the-heroine/chapter/4350022/chapter-twenty-city",
+        "section": "author-note",
+        "target": "_blank",
+        "rel": "noopener ugc nofollow",
+        "img": true,
+        "text": ""
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/190085/save-the-heroine/chapter/4350022/chapter-twenty-city",
+        "section": "author-note",
+        "target": "_blank",
+        "rel": "noopener ugc nofollow",
+        "img": false,
+        "text": "Check It Out \u2192"
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/200757"
+    }
+  },
+  {
+    "name": "real rr-fiction 5",
+    "provenance": "real",
+    "form": "rr-fiction",
+    "href": "https://www.royalroad.com/fiction/184656",
+    "sourceChapter": "https://www.royalroad.com/fiction/190085/save-the-heroine/chapter/4366194/chapter-twenty-one-hustler",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/190085/save-the-heroine/chapter/4366194/chapter-twenty-one-hustler",
+        "section": "author-note",
+        "target": "_blank",
+        "rel": "noopener ugc nofollow",
+        "img": true,
+        "text": ""
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/190085/save-the-heroine/chapter/4366194/chapter-twenty-one-hustler",
+        "section": "author-note",
+        "target": "_blank",
+        "rel": "noopener ugc nofollow",
+        "img": false,
+        "text": "JOIN LUNARIA ON THE LONG ROAD! \u2192"
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/184656"
+    }
+  },
+  {
+    "name": "real rr-fiction 6",
+    "provenance": "real",
+    "form": "rr-fiction",
+    "href": "https://www.royalroad.com/fiction/172213/perfect-ten",
+    "sourceChapter": "https://www.royalroad.com/fiction/192660/coin-and-steel/chapter/4362674/chapter-48-bells-from-above",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/192660/coin-and-steel/chapter/4362674/chapter-48-bells-from-above",
+        "section": "author-note",
+        "target": null,
+        "rel": "ugc nofollow",
+        "img": true,
+        "text": ""
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/192660/coin-and-steel/chapter/4362674/chapter-48-bells-from-above",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "Perfect Ten (Sci-Fi, Fantasy, Progression, LitRPG)"
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/192660/coin-and-steel/chapter/4362674/chapter-48-bells-from-above",
+        "section": "author-note",
+        "target": null,
+        "rel": "ugc nofollow",
+        "img": false,
+        "text": "\u25b6 Read Now!!!"
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/172213"
+    }
+  },
+  {
+    "name": "real rr-fiction 7",
+    "provenance": "real",
+    "form": "rr-fiction",
+    "href": "https://www.royalroad.com/fiction/181091/bright-light-isekai-female-mc-lit-rpg-progression",
+    "sourceChapter": "https://www.royalroad.com/fiction/192660/coin-and-steel/chapter/4368117/chapter-49-bright-arrows",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/192660/coin-and-steel/chapter/4368117/chapter-49-bright-arrows",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": true,
+        "text": ""
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/192660/coin-and-steel/chapter/4368117/chapter-49-bright-arrows",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "Bright Light"
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/192660/coin-and-steel/chapter/4368117/chapter-49-bright-arrows",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "READ NOW \u2192"
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/181091"
+    }
+  },
+  {
+    "name": "real other-host:patreon.com 8",
+    "provenance": "real",
+    "form": "other-host:patreon.com",
+    "href": "http://patreon.com/adastra339",
+    "sourceChapter": "https://www.royalroad.com/fiction/180704/awakening-in-the-altered-world-litrpg-isekai/chapter/4368754/chapter-70",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/180704/awakening-in-the-altered-world-litrpg-isekai/chapter/4368754/chapter-70",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "Patreon!"
+      }
+    ],
+    "expected": null
+  },
+  {
+    "name": "real other-host:patreon.com 9",
+    "provenance": "real",
+    "form": "other-host:patreon.com",
+    "href": "https://www.patreon.com/adastra339",
+    "sourceChapter": "https://www.royalroad.com/fiction/180704/awakening-in-the-altered-world-litrpg-isekai/chapter/4376490/chapter-71",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/180704/awakening-in-the-altered-world-litrpg-isekai/chapter/4376490/chapter-71",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "Patreon for 20 extra chapters!"
+      }
+    ],
+    "expected": null
+  },
+  {
+    "name": "real other-host:patreon.com 10",
+    "provenance": "real",
+    "form": "other-host:patreon.com",
+    "href": "https://www.patreon.com/cw/joshshoniix",
+    "sourceChapter": "https://www.royalroad.com/fiction/171123/i-made-a-railgun-with-lightning-magic-litrpg-op/chapter/3557293/1101-is-that-a-status-window",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/171123/i-made-a-railgun-with-lightning-magic-litrpg-op/chapter/3557293/1101-is-that-a-status-window",
+        "section": "author-note",
+        "target": "_blank",
+        "rel": "noopener ugc nofollow",
+        "img": false,
+        "text": "Patreon"
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/171123/i-made-a-railgun-with-lightning-magic-litrpg-op/chapter/4363429/2203-proposals",
+        "section": "author-note",
+        "target": "_blank",
+        "rel": "noopener ugc nofollow",
+        "img": false,
+        "text": "Patreon"
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/171123/i-made-a-railgun-with-lightning-magic-litrpg-op/chapter/4374318/2204-coming-off",
+        "section": "author-note",
+        "target": "_blank",
+        "rel": "noopener ugc nofollow",
+        "img": false,
+        "text": "Patreon"
+      }
+    ],
+    "expected": null
+  },
+  {
+    "name": "real rr-fiction 11",
+    "provenance": "real",
+    "form": "rr-fiction",
+    "href": "https://www.royalroad.com/fiction/191616/starbonded-book-one",
+    "sourceChapter": "https://www.royalroad.com/fiction/171123/i-made-a-railgun-with-lightning-magic-litrpg-op/chapter/4363429/2203-proposals",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/171123/i-made-a-railgun-with-lightning-magic-litrpg-op/chapter/4363429/2203-proposals",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "Starbonded [Progression Fantasy, Dystopian]"
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/171123/i-made-a-railgun-with-lightning-magic-litrpg-op/chapter/4363429/2203-proposals",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "Read Now!"
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/191616"
+    }
+  },
+  {
+    "name": "real other-host:patreon.com 12",
+    "provenance": "real",
+    "form": "other-host:patreon.com",
+    "href": "https://www.patreon.com/joshshoniix?utm_campaign=creatorshare_creator",
+    "sourceChapter": "https://www.royalroad.com/fiction/171123/i-made-a-railgun-with-lightning-magic-litrpg-op/chapter/4363429/2203-proposals",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/171123/i-made-a-railgun-with-lightning-magic-litrpg-op/chapter/4363429/2203-proposals",
+        "section": "author-note",
+        "target": "_blank",
+        "rel": "noopener ugc nofollow",
+        "img": true,
+        "text": ""
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/171123/i-made-a-railgun-with-lightning-magic-litrpg-op/chapter/4374318/2204-coming-off",
+        "section": "author-note",
+        "target": "_blank",
+        "rel": "noopener ugc nofollow",
+        "img": true,
+        "text": ""
+      }
+    ],
+    "expected": null
+  },
+  {
+    "name": "real rr-fiction 13",
+    "provenance": "real",
+    "form": "rr-fiction",
+    "href": "https://www.royalroad.com/fiction/200056",
+    "sourceChapter": "https://www.royalroad.com/fiction/171123/i-made-a-railgun-with-lightning-magic-litrpg-op/chapter/4374318/2204-coming-off",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/171123/i-made-a-railgun-with-lightning-magic-litrpg-op/chapter/4374318/2204-coming-off",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "Young World"
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/171123/i-made-a-railgun-with-lightning-magic-litrpg-op/chapter/4374318/2204-coming-off",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "Read Now!"
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/200056"
+    }
+  },
+  {
+    "name": "real rr-fiction 14",
+    "provenance": "real",
+    "form": "rr-fiction",
+    "href": "https://www.royalroad.com/fiction/193298/talent-beyond-limit-stacking-many-talents",
+    "sourceChapter": "https://www.royalroad.com/fiction/193298/talent-beyond-limits/chapter/3982974/chapter-1-remembering-the-past",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/193298/talent-beyond-limits/chapter/3982974/chapter-1-remembering-the-past",
+        "section": "chapter",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "https://www.royalroad.com/fiction/193298/talent-beyond-limit"
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/193298"
+    }
+  },
+  {
+    "name": "real rr-fiction 15",
+    "provenance": "real",
+    "form": "rr-fiction",
+    "href": "https://www.royalroad.com/fiction/160420/young-aidas-sorcerous-powers",
+    "sourceChapter": "https://www.royalroad.com/fiction/195193/why-the-stars-burn-progression-isekai-no-ai-writing/chapter/4369776/chapter-59-the-most-important-word",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/195193/why-the-stars-burn-progression-isekai-no-ai-writing/chapter/4369776/chapter-59-the-most-important-word",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "Young Aida's Sorcerous Powers"
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/195193/why-the-stars-burn-progression-isekai-no-ai-writing/chapter/4369776/chapter-59-the-most-important-word",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "Read Now!"
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/160420"
+    }
+  },
+  {
+    "name": "real other-host:patreon.com 16",
+    "provenance": "real",
+    "form": "other-host:patreon.com",
+    "href": "https://www.patreon.com/c/AoddWrites",
+    "sourceChapter": "https://www.royalroad.com/fiction/195193/why-the-stars-burn-progression-isekai-no-ai-writing/chapter/4369776/chapter-59-the-most-important-word",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/195193/why-the-stars-burn-progression-isekai-no-ai-writing/chapter/4369776/chapter-59-the-most-important-word",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "Patreon"
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/195193/why-the-stars-burn-progression-isekai-no-ai-writing/chapter/4374852/chapter-60-catastrophic-health-consequences",
+        "section": "author-note",
+        "target": null,
+        "rel": " ugc nofollow",
+        "img": false,
+        "text": "Patreon"
+      }
+    ],
+    "expected": null
+  },
+  {
+    "name": "real rr-fiction 17",
+    "provenance": "real",
+    "form": "rr-fiction",
+    "href": "https://www.royalroad.com/fiction/177853/new-world-hoarder",
+    "sourceChapter": "https://www.royalroad.com/fiction/195193/why-the-stars-burn-progression-isekai-no-ai-writing/chapter/4374852/chapter-60-catastrophic-health-consequences",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/195193/why-the-stars-burn-progression-isekai-no-ai-writing/chapter/4374852/chapter-60-catastrophic-health-consequences",
+        "section": "author-note",
+        "target": "_blank",
+        "rel": "noopener ugc nofollow",
+        "img": true,
+        "text": ""
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/195193/why-the-stars-burn-progression-isekai-no-ai-writing/chapter/4374852/chapter-60-catastrophic-health-consequences",
+        "section": "author-note",
+        "target": "_blank",
+        "rel": "noopener ugc nofollow",
+        "img": false,
+        "text": "[ ACCEPT QUEST ] Read on Royal Road"
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/177853"
+    }
+  },
+  {
+    "name": "real rr-fiction 18",
+    "provenance": "real",
+    "form": "rr-fiction",
+    "href": "https://www.royalroad.com/fiction/171269/piecemeal-isekai-litrpg",
+    "sourceChapter": "https://www.royalroad.com/fiction/194905/sepulchral-sun-an-occultivation-story-fire-cultivatoreldritch/chapter/4371600/chapter-58-fighting-a-first-circle-sorcerer",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/194905/sepulchral-sun-an-occultivation-story-fire-cultivatoreldritch/chapter/4371600/chapter-58-fighting-a-first-circle-sorcerer",
+        "section": "author-note",
+        "target": null,
+        "rel": "ugc nofollow",
+        "img": true,
+        "text": ""
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/194905/sepulchral-sun-an-occultivation-story-fire-cultivatoreldritch/chapter/4371600/chapter-58-fighting-a-first-circle-sorcerer",
+        "section": "author-note",
+        "target": null,
+        "rel": "ugc nofollow",
+        "img": false,
+        "text": "Piecemeal [Isekai LitRPG]"
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/171269"
+    }
+  },
+  {
+    "name": "real rr-fiction 19",
+    "provenance": "real",
+    "form": "rr-fiction",
+    "href": "https://www.royalroad.com/fiction/143989/e-unit-the-blue-angels-of-death",
+    "sourceChapter": "https://www.royalroad.com/fiction/194905/sepulchral-sun-an-occultivation-story-fire-cultivatoreldritch/chapter/4373709/chapter-59-sisyphean-toils",
+    "observations": [
+      {
+        "chapter": "https://www.royalroad.com/fiction/194905/sepulchral-sun-an-occultivation-story-fire-cultivatoreldritch/chapter/4373709/chapter-59-sisyphean-toils",
+        "section": "author-note",
+        "target": null,
+        "rel": "ugc nofollow",
+        "img": true,
+        "text": ""
+      },
+      {
+        "chapter": "https://www.royalroad.com/fiction/194905/sepulchral-sun-an-occultivation-story-fire-cultivatoreldritch/chapter/4373709/chapter-59-sisyphean-toils",
+        "section": "author-note",
+        "target": null,
+        "rel": "ugc nofollow",
+        "img": false,
+        "text": "Start Reading \u2192"
+      }
+    ],
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/143989"
+    }
+  },
+  {
+    "name": "bare host",
+    "href": "https://royalroad.com/fiction/123/title",
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/123"
+    },
+    "provenance": "synthetic",
+    "form": "bare host"
+  },
+  {
+    "name": "http www",
+    "href": "http://www.royalroad.com/fiction/123/title",
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/123"
+    },
+    "provenance": "synthetic",
+    "form": "http www"
+  },
+  {
+    "name": "http bare",
+    "href": "http://royalroad.com/fiction/123",
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/123"
+    },
+    "provenance": "synthetic",
+    "form": "http bare"
+  },
+  {
+    "name": "query",
+    "href": "https://www.royalroad.com/fiction/123/title?ref=note",
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/123"
+    },
+    "provenance": "synthetic",
+    "form": "query"
+  },
+  {
+    "name": "fragment",
+    "href": "https://www.royalroad.com/fiction/123/title#reviews",
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/123"
+    },
+    "provenance": "synthetic",
+    "form": "fragment"
+  },
+  {
+    "name": "short chapter (open decision)",
+    "href": "https://www.royalroad.com/fiction/123/chapter/456",
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/123"
+    },
+    "provenance": "synthetic",
+    "form": "short chapter",
+    "decision": "depends on user decision: chapter link -> novel or chapter"
+  },
+  {
+    "name": "online resolved relative (open decision)",
+    "href": "https://www.royalroad.com/fiction/123",
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/123"
+    },
+    "provenance": "synthetic",
+    "form": "online resolved relative",
+    "decision": "depends on user decision: relative links"
+  },
+  {
+    "name": "raw relative (open decision)",
+    "href": "/fiction/123",
+    "expected": null,
+    "provenance": "synthetic",
+    "form": "raw relative",
+    "decision": "depends on user decision: relative links"
+  },
+  {
+    "name": "downloaded relative has no web base (open decision)",
+    "href": "about:blank/fiction/123",
+    "expected": null,
+    "provenance": "synthetic",
+    "form": "downloaded relative has no web base",
+    "decision": "depends on user decision: relative links"
+  },
+  {
+    "name": "profile",
+    "href": "https://www.royalroad.com/profile/123",
+    "expected": null,
+    "provenance": "synthetic",
+    "form": "profile"
+  },
+  {
+    "name": "forums",
+    "href": "https://www.royalroad.com/forums/thread/123",
+    "expected": null,
+    "provenance": "synthetic",
+    "form": "forums"
+  },
+  {
+    "name": "store",
+    "href": "https://www.royalroad.com/store",
+    "expected": null,
+    "provenance": "synthetic",
+    "form": "store"
+  },
+  {
+    "name": "search",
+    "href": "https://www.royalroad.com/fictions/search?title=hello",
+    "expected": null,
+    "provenance": "synthetic",
+    "form": "search"
+  },
+  {
+    "name": "Discord",
+    "href": "https://discord.gg/abc",
+    "expected": null,
+    "provenance": "synthetic",
+    "form": "Discord"
+  },
+  {
+    "name": "Amazon",
+    "href": "https://www.amazon.com/dp/123",
+    "expected": null,
+    "provenance": "synthetic",
+    "form": "Amazon"
+  },
+  {
+    "name": "Scribble Hub",
+    "href": "https://www.scribblehub.com/series/123/title",
+    "expected": null,
+    "provenance": "synthetic",
+    "form": "Scribble Hub"
+  },
+  {
+    "name": "source without rule (open decision)",
+    "href": "https://testsource.example.com/fiction/123",
+    "expected": null,
+    "provenance": "synthetic",
+    "form": "source without rule",
+    "decision": "depends on user decision: sources without a rule"
+  },
+  {
+    "name": "non-web scheme",
+    "href": "javascript:void(0)",
+    "expected": null,
+    "provenance": "synthetic",
+    "form": "non-web scheme"
+  },
+  {
+    "name": "host without scheme",
+    "href": "royalroad.com/fiction/123",
+    "expected": null,
+    "provenance": "synthetic",
+    "form": "host without scheme"
+  },
+  {
+    "name": "novel sub-page reviews",
+    "href": "https://www.royalroad.com/fiction/123/title/reviews",
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/123"
+    },
+    "provenance": "synthetic",
+    "form": "novel sub-pages",
+    "decision": "depends on user decision: novel sub-pages"
+  },
+  {
+    "name": "novel sub-page reviews?page=2#review",
+    "href": "https://www.royalroad.com/fiction/123/title/reviews?page=2#review",
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/123"
+    },
+    "provenance": "synthetic",
+    "form": "novel sub-pages",
+    "decision": "depends on user decision: novel sub-pages"
+  },
+  {
+    "name": "novel sub-page reviews/123",
+    "href": "https://www.royalroad.com/fiction/123/title/reviews/123",
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/123"
+    },
+    "provenance": "synthetic",
+    "form": "novel sub-pages",
+    "decision": "depends on user decision: novel sub-pages"
+  },
+  {
+    "name": "ratings sub-page",
+    "provenance": "synthetic",
+    "form": "novel sub-pages",
+    "href": "https://www.royalroad.com/fiction/123/title/ratings",
+    "expected": {
+      "pluginId": "royalroad",
+      "path": "fiction/123"
+    },
+    "decision": "depends on user decision: novel sub-pages"
+  }
+]

@@ -1,3 +1,4 @@
+import novelLinkCases from './novelLinkCases.json';
 import type { PluginItem } from '@plugins/types';
 import { getMMKVObject } from '@utils/mmkv/mmkv';
 import { getNovelByPathPrefix } from '@database/queries/NovelQueries';
@@ -251,5 +252,24 @@ describe('resolveNovelLink', () => {
     expect(
       resolveNovelLink('https://www.royalroad.com/fiction/21220'),
     ).toBeUndefined();
+  });
+});
+
+// Real rows are deduplicated hrefs collected in the phone app from author-note
+// and chapter-content anchors; sourceChapter and observations retain provenance.
+// Image wrapping and target are anchor attributes, not resolver inputs.
+// Decision fields record defaults, including fiction/<id>/... sub-pages.
+// Online /fiction/123 resolves against plugin.site and the WebView reports
+// https://www.royalroad.com/fiction/123. Downloaded HTML has no baseUrl; its
+// about:blank origin cannot resolve a relative href to Royal Road. Exact Android
+// callback spelling (or whether navigation emits one) remains unverified; the
+// about:blank/fiction/123 row models a non-web URL, not an observed callback.
+describe('resolveNovelLink author-note URL forms', () => {
+  beforeEach(() => {
+    mockGetMMKVObject.mockReturnValue([royalRoad, testSource]);
+  });
+
+  it.each(novelLinkCases)('$name: $href', ({ href, expected }) => {
+    expect(resolveNovelLink(href)).toEqual(expected ?? undefined);
   });
 });
