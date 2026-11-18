@@ -141,6 +141,10 @@ export const ChapterContent = ({
     chapter.bookmark ?? false,
   );
   const [searchVisible, setSearchVisible] = useState(false);
+  const searchVisibleRef = useRef(searchVisible);
+  useEffect(() => {
+    searchVisibleRef.current = searchVisible;
+  }, [searchVisible]);
   const [searchResult, setSearchResult] = useState<ReaderSearchResult>(
     EMPTY_READER_SEARCH_RESULT,
   );
@@ -306,7 +310,7 @@ export const ChapterContent = ({
         <ChapterLoadingScreen />
       ) : (
         <WebViewReader
-          chromeHidden={hidden || searchVisible}
+          searchVisibleRef={searchVisibleRef}
           onPress={handleReaderPress}
           onTouchStart={handleReaderTouchStart}
           onSearchResult={setSearchResult}
