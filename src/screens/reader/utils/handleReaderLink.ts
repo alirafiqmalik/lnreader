@@ -10,40 +10,39 @@ type LinkActions = {
   refresh(): void;
 };
 
-export function handleReaderLink(
-  data: unknown,
-  actions: LinkActions,
-  source: 'page' | 'native' | 'window' = 'page',
-) {
-  if (
-    !data ||
-    typeof data !== 'object' ||
-    !('url' in data) ||
-    typeof data.url !== 'string' ||
-    (source === 'page' && !/^https?:/i.test(data.url))
-  ) {
-    return;
-  }
-  const url = data.url;
-  if (isPluginIssueReportUrl(url)) {
-    actions.openExternal(url);
-  } else if (isChapterRefreshUrl(url)) {
-    actions.refresh();
-  } else if (!actions.openNovel(url)) {
+export function createReaderLinkHandlers(actions: LinkActions) {
+  const handleSpecial = (url: string): boolean => {
+    if (isPluginIssueReportUrl(url)) actions.openExternal(url);
+    else if (isChapterRefreshUrl(url)) actions.refresh();
+    else return actions.openNovel(url);
+    return true;
+  };
+  const openWindow = (url: string): void => {
+    if (/^(about|javascript):/i.test(url)) return;
+    if (!handleSpecial(url)) actions.openExternal(url);
+  };
+  const shouldStartLoad = (url: string): boolean => !handleSpecial(url);
+  const handlePage = (data: unknown): void => {
+    if (
+      !data ||
+      typeof data !== 'object' ||
+      !('url' in data) ||
+      typeof data.url !== 'string' ||
+      !/^https?:/i.test(data.url)
+    ) {
+      return;
+    }
+    const url = data.url;
+    if (handleSpecial(url)) return;
     const target =
       'target' in data && typeof data.target === 'string'
         ? data.target.toLowerCase()
         : '';
-    if (
-      source === 'window' ||
-      !['', '_self', '_parent', '_top'].includes(target)
-    ) {
+    if (!['', '_self', '_parent', '_top'].includes(target)) {
       actions.openExternal(url);
-    } else if (source === 'page') {
-      actions.inject(`window.location.href = ${JSON.stringify(url)}; true;`);
     } else {
-      return true;
+      actions.inject(`window.location.href = ${JSON.stringify(url)}; true;`);
     }
-  }
-  return false;
+  };
+  return { handlePage, shouldStartLoad, openWindow };
 }

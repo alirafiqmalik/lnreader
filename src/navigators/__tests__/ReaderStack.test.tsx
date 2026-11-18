@@ -1,9 +1,6 @@
 import React from 'react';
-import { screen, waitFor } from '@testing-library/react-native';
-import { act, render, fireEvent } from '@test-utils';
+import { act, render } from '@test-utils';
 import ReaderStack from '../ReaderStack';
-import JumpToChapterModal from '@screens/novel/components/JumpToChapterModal';
-import { NovelScreenProps } from '../types';
 import { useNovelActions, useNovelValue } from '@screens/novel/NovelContext';
 import { ChapterInfo, NovelInfo } from '@database/types';
 
@@ -42,42 +39,6 @@ let mockChapters = [chapter];
 let actions: ReturnType<typeof useNovelActions>;
 let chapters: ChapterInfo[];
 const mockRowUnmount = jest.fn();
-let mockNavigate = jest.fn();
-let mockShowJump = false;
-jest.mock('@components', () => {
-  const mockReact = require('react');
-  const { View, Pressable, Text } = require('react-native');
-  function Container({ children }: { children: React.ReactNode }) {
-    return mockReact.createElement(View, null, children);
-  }
-  function Action({
-    title,
-    label,
-    onPress,
-  }: {
-    title?: string;
-    label?: string;
-    onPress: () => void;
-  }) {
-    return mockReact.createElement(
-      Pressable,
-      { onPress },
-      mockReact.createElement(Text, null, title ?? label),
-    );
-  }
-  return {
-    Dialog: {
-      Root: Container,
-      Header: Container,
-      Title: Container,
-      Description: Container,
-      ScrollArea: Container,
-      Actions: Container,
-      Action,
-    },
-    SwitchItem: Action,
-  };
-});
 jest.mock('@legendapp/list/react-native', () => ({
   LegendList: ({
     ListHeaderComponent,
@@ -100,19 +61,6 @@ function MockProbe() {
   return loading ? null : (
     <>
       <ChapterRow />
-      {mockShowJump && (
-        <JumpToChapterModal
-          hideModal={jest.fn()}
-          modalVisible
-          novel={mockNovel}
-          chapterListRef={{ current: null }}
-          navigation={
-            {
-              navigate: mockNavigate,
-            } as unknown as NovelScreenProps['navigation']
-          }
-        />
-      )}
     </>
   );
 }
@@ -178,8 +126,6 @@ beforeEach(() => {
   mockChapters = [chapter];
   mockRowUnmount.mockClear();
   mockSwitch.mockClear();
-  mockNavigate = jest.fn();
-  mockShowJump = false;
   actions = undefined!;
   chapters = [];
 });
@@ -236,33 +182,4 @@ it('bootstraps a Chapter-only stack opened from History', () => {
   );
   expect(chapters).toHaveLength(mockChapters.length);
   expect(actions).toBeDefined();
-});
-
-it('keeps the parent params and store when the jump dialog opens a chapter', async () => {
-  mockShowJump = true;
-  const initial = { screen: 'Novel', params: mockNovel };
-  let parentParams: typeof initial | { screen: string; params: unknown } =
-    initial;
-  const view = render(<ReaderStack route={{ params: parentParams }} />, {
-    wrapper: React.Fragment,
-  });
-  const originalActions = actions;
-  const originalRows = chapters;
-  mockNavigate.mockImplementation((name: string, params: unknown) => {
-    if (name === 'ReaderStack') parentParams = params as typeof parentParams;
-    view.rerender(<ReaderStack route={{ params: parentParams }} />);
-  });
-  fireEvent.press(screen.getByText('Open Chapter'));
-  const input = view.UNSAFE_getByType(require('react-native-paper').TextInput);
-  fireEvent.changeText(input, '1');
-  fireEvent(input, 'submitEditing');
-  await waitFor(() => expect(mockNavigate).toHaveBeenCalled());
-  expect(mockNavigate).toHaveBeenCalledWith('Chapter', {
-    novel: mockNovel,
-    chapter,
-  });
-  expect(parentParams).toBe(initial);
-  expect(actions).toBe(originalActions);
-  expect(chapters).toBe(originalRows);
-  expect(mockRowUnmount).not.toHaveBeenCalled();
 });

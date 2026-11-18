@@ -1,91 +1,60 @@
-import { handleReaderLink } from '../handleReaderLink';
-
+import { createReaderLinkHandlers } from '../handleReaderLink';
 jest.mock('sanitize-html', () => ({
   __esModule: true,
   default: Object.assign(jest.fn(), { defaults: { allowedTags: ['p'] } }),
 }));
-
-describe('reader link messages', () => {
-  const url = 'https://royalroad.com/fiction/123';
-  it.each(['', '_blank', '_BLANK', '_new', 'named'])(
-    'opens a novel in the app (%s)',
-    target => {
-      const openNovel = jest.fn(() => true);
-      const openExternal = jest.fn();
-      const inject = jest.fn();
-      handleReaderLink(
-        { url, target },
-        { openNovel, openExternal, inject, refresh: jest.fn() },
-      );
-      expect(openNovel).toHaveBeenCalledWith(url);
-      expect(openExternal).not.toHaveBeenCalled();
-      expect(inject).not.toHaveBeenCalled();
-    },
-  );
-  it.each(['', '_blank', '_BLANK', '_new', 'named'])(
-    'preserves other link behavior (%s)',
-    target => {
-      const openExternal = jest.fn();
-      const inject = jest.fn();
-      handleReaderLink(
-        { url, target },
-        { openNovel: () => false, openExternal, inject, refresh: jest.fn() },
-      );
-      expect(openExternal.mock.calls).toEqual(target ? [[url]] : []);
-      const navigationScript = expect.stringContaining(JSON.stringify(url));
-      expect(inject.mock.calls).toEqual(target ? [] : [[navigationScript]]);
-    },
-  );
-});
-
-it.each(['native', 'window'] as const)(
-  'routes native refresh through %s',
-  source => {
-    const refresh = jest.fn();
-    const openNovel = jest.fn(() => false);
-    expect(
-      handleReaderLink(
-        { url: 'lnreader://refresh-chapter' },
-        { refresh, openNovel, openExternal: jest.fn(), inject: jest.fn() },
-        source,
-      ),
-    ).toBe(false);
-    expect(refresh).toHaveBeenCalledTimes(1);
-    expect(openNovel).not.toHaveBeenCalled();
-  },
-);
-it.each(['page', 'native', 'window'] as const)(
-  'routes issue reports externally through %s',
-  source => {
-    const openExternal = jest.fn();
-    const url = 'https://github.com/lnreader/lnreader-plugins/issues/new';
-    handleReaderLink(
-      { url },
-      {
-        refresh: jest.fn(),
-        openNovel: () => false,
-        openExternal,
-        inject: jest.fn(),
-      },
-      source,
-    );
-    expect(openExternal).toHaveBeenCalledWith(url);
-  },
-);
+const setup = (novel = false) => {
+  const actions = {
+    openNovel: jest.fn(() => novel),
+    openExternal: jest.fn(),
+    inject: jest.fn(),
+    refresh: jest.fn(),
+  };
+  return { ...createReaderLinkHandlers(actions), actions };
+};
 it.each(['', '_SELF', '_parent', '_top'])(
-  'allows native in-place navigation for %s',
+  'loads same-window pages (%s)',
   target => {
-    expect(
-      handleReaderLink(
-        { url: 'https://example.com', target },
-        {
-          refresh: jest.fn(),
-          openNovel: () => false,
-          openExternal: jest.fn(),
-          inject: jest.fn(),
-        },
-        'native',
-      ),
-    ).toBe(true);
+    const h = setup();
+    h.handlePage({ url: 'https://example.com', target });
+    expect(h.actions.inject).toHaveBeenCalled();
+    expect(h.shouldStartLoad('https://example.com')).toBe(true);
   },
 );
+it.each(['_blank', '_new', 'named'])(
+  'opens window targets externally (%s)',
+  target => {
+    const h = setup();
+    h.handlePage({ url: 'https://example.com', target });
+    expect(h.actions.openExternal).toHaveBeenCalledWith('https://example.com');
+  },
+);
+it('routes novel links from every entry point', () => {
+  const h = setup(true);
+  const url = 'https://royalroad.com/fiction/123';
+  h.handlePage({ url, target: '_blank' });
+  h.openWindow(url);
+  expect(h.shouldStartLoad(url)).toBe(false);
+  expect(h.actions.openNovel).toHaveBeenCalledTimes(3);
+  expect(h.actions.openExternal).not.toHaveBeenCalled();
+});
+it('preserves native refresh and non-http navigation', () => {
+  const h = setup();
+  expect(h.shouldStartLoad('lnreader://refresh-chapter')).toBe(false);
+  expect(h.actions.refresh).toHaveBeenCalledTimes(1);
+  expect(h.shouldStartLoad('mailto:author@example.com')).toBe(true);
+});
+it.each(['about:blank', 'javascript:void(0)'])(
+  'ignores non-navigation windows %s',
+  url => {
+    const h = setup();
+    h.openWindow(url);
+    expect(h.actions.openExternal).not.toHaveBeenCalled();
+  },
+);
+it('opens plugin reports externally', () => {
+  const h = setup();
+  const url = 'https://github.com/lnreader/lnreader-plugins/issues/new';
+  expect(h.shouldStartLoad(url)).toBe(false);
+  expect(h.actions.openExternal).toHaveBeenCalledWith(url);
+});

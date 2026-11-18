@@ -865,16 +865,17 @@ window.addEventListener('load', () => {
   document.onclick = e => {
     // A link opens its target (in the app for novel links), so the tap must not
     // also toggle the reader controls or turn the page.
-    if (e.defaultPrevented) return;
     const link = e.target.closest('a[href]');
     if (link) {
+      if (e.defaultPrevented) return;
+      const inPage = link.href.split('#')[0] === location.href.split('#')[0];
+      if (inPage) return;
       if (Date.now() - lastLinkTap < 1000) {
         e.preventDefault();
         return;
       }
       lastLinkTap = Date.now();
-      const inPage = link.href.split('#')[0] === location.href.split('#')[0];
-      if (/^https?:/i.test(link.href) && !inPage) {
+      if (/^https?:/i.test(link.href)) {
         e.preventDefault();
         reader.post({
           type: 'link',
