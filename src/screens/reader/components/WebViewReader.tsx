@@ -35,7 +35,7 @@ import { TextInput } from 'react-native-paper';
 import useCustomCode from './Hooks/useCustomCode';
 import useTextModifications from './Hooks/useTextModifications';
 import { buildReaderChromeScript } from '../utils/buildReaderChromeScript';
-import { handleReaderLink } from '../utils/handleReaderLink';
+import { createReaderLinkHandlers } from '../utils/handleReaderLink';
 
 export type WebViewPostEvent = {
   type: string;
@@ -46,11 +46,12 @@ export type WebViewPostEvent = {
 };
 
 type WebViewReaderProps = {
-  searchVisibleRef: React.MutableRefObject<boolean>;
+  hiddenRef: React.RefObject<boolean>;
+  searchVisibleRef: React.RefObject<boolean>;
   onPress(): void;
   onTouchStart?(): void;
   onSearchResult(result: ReaderSearchResult): void;
-  searchTextRef: React.MutableRefObject<string>;
+  searchTextRef: React.RefObject<string>;
 };
 
 const onLogMessage = (payload: { nativeEvent: { data: string } }) => {
@@ -130,6 +131,7 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
   onSearchResult,
   searchTextRef,
   searchVisibleRef,
+  hiddenRef,
 }) => {
   const {
     novel,
@@ -143,23 +145,18 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
     onUserInteraction,
     isTTSReadingRef,
     refetch,
-    hiddenRef,
   } = useChapterContext();
   const theme = useTheme();
   const openNovelLink = useNovelLinkNavigation(novel);
-  const routeLink = (data: unknown, source: 'page' | 'native' | 'window') =>
-    handleReaderLink(
-      data,
-      {
-        openNovel: openNovelLink,
-        openExternal: url => {
-          void Linking.openURL(url);
-        },
-        inject: script => webViewRef.current?.injectJavaScript(script),
-        refresh: refetch,
+  const linkHandlers = () =>
+    createReaderLinkHandlers({
+      openNovel: openNovelLink,
+      openExternal: url => {
+        void Linking.openURL(url).catch(() => undefined);
       },
-      source,
-    );
+      inject: script => webViewRef.current?.injectJavaScript(script),
+      refresh: refetch,
+    });
   const initialReaderSettings = useMemo(
     () => ({
       ...initialChapterReaderSettings,
@@ -479,10 +476,10 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
         javaScriptEnabled={true}
         webviewDebuggingEnabled={__DEV__}
         onShouldStartLoadWithRequest={({ url }) =>
-          routeLink({ url }, 'native') ?? false
+          linkHandlers().shouldStartLoad(url)
         }
         onOpenWindow={({ nativeEvent: { targetUrl } }) => {
-          routeLink({ url: targetUrl }, 'window');
+          linkHandlers().openWindow(targetUrl);
         }}
         onLoadEnd={() => {
           // A new document resets page state even when the app controls stay open.
@@ -530,7 +527,7 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
           const event: WebViewPostEvent = JSON.parse(ev.nativeEvent.data);
           switch (event.type) {
             case 'link':
-              routeLink(event.data, 'page');
+              linkHandlers().handlePage(event.data);
               break;
             case 'tts-queue': {
               const payload = event.data as

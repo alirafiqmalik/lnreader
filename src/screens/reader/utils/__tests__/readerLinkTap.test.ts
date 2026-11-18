@@ -154,3 +154,19 @@ it.each([
   clock.now += 300;
   expect(tap(true, '', url).preventDefault).toHaveBeenCalled();
 });
+
+it('keeps footnotes outside the leaving-page debounce', () => {
+  const { tap, clock, post } = loadClickHandler();
+  tap(true, '', 'https://www.royalroad.com/#note');
+  clock.now += 100;
+  expect(tap(true).preventDefault).toHaveBeenCalled();
+  expect(post).toHaveBeenCalledTimes(1);
+  expect(
+    tap(true, '', 'https://www.royalroad.com/#back').preventDefault,
+  ).not.toHaveBeenCalled();
+});
+it('still handles a prevented non-link tap', () => {
+  const { tap, post } = loadClickHandler();
+  tap(false, '', '', true);
+  expect(post).toHaveBeenCalledWith({ type: 'hide' });
+});
