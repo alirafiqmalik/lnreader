@@ -5,8 +5,8 @@
   "patches": [
     {
       "branch": "dev/fork-android",
-      "base": "dc394e8540d44902efc17b5a35485bdb0724bb00",
-      "head": "b40e6e7e1962b7629312358c2855c4217fc7e969",
+      "base": "e0a9af1325ebc63bd8c175af6fa5cc65bc960491",
+      "head": "94ad305157ed77224cdd8ef02d133c47a39fe663",
       "pr": null
     },
     {
