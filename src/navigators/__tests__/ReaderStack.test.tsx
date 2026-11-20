@@ -80,6 +80,7 @@ jest.mock('@react-navigation/native-stack', () => ({
 }));
 jest.mock('@components/Context/LibraryContext', () => ({
   useLibraryContext: () => ({ switchNovelToLibrary: mockSwitch }),
+  useLibraryActions: () => ({ switchNovelToLibrary: mockSwitch }),
 }));
 jest.mock('@hooks/persisted', () => ({
   useAppSettings: () => ({ defaultChapterSort: 'ORDER BY id ASC' }),
