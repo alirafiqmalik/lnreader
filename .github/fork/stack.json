@@ -14,6 +14,12 @@
       "base": "e0a9af1325ebc63bd8c175af6fa5cc65bc960491",
       "head": "52953f396f16f7d603b4d684122abec68ef384b8",
       "pr": null
+    },
+    {
+      "branch": "feature/add-recommendations-from-reader",
+      "base": "e0a9af1325ebc63bd8c175af6fa5cc65bc960491",
+      "head": "9fee50144a93eb330529cec77bef4bbbbf7cc4e1",
+      "pr": null
     }
   ],
   "required_patch": "dev/fork-android"
