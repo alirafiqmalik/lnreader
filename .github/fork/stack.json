@@ -11,8 +11,8 @@
     },
     {
       "branch": "dev/tablet-ui",
-      "base": "dc394e8540d44902efc17b5a35485bdb0724bb00",
-      "head": "9a82c315512575abdad225547d62bf434c06a01c",
+      "base": "e0a9af1325ebc63bd8c175af6fa5cc65bc960491",
+      "head": "52953f396f16f7d603b4d684122abec68ef384b8",
       "pr": null
     }
   ],
