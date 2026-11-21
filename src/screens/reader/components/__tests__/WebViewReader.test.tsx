@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { render, act } from '@test-utils';
 import WebView from 'react-native-webview';
+import * as Linking from 'expo-linking';
 
 import WebViewReader from '../WebViewReader';
 
@@ -150,4 +151,34 @@ describe('WebViewReader', () => {
       );
     },
   );
+
+  it('sends page messages, load requests, and new windows to novel navigation', () => {
+    const props = mount().UNSAFE_getByType(WebView).props;
+    mockOpenNovel.mockReturnValue(true);
+    const url = 'https://royalroad.com/fiction/123';
+
+    act(() =>
+      props.onMessage({
+        nativeEvent: { data: JSON.stringify({ type: 'link', data: { url } }) },
+      }),
+    );
+
+    expect(mockOpenNovel).toHaveBeenCalledWith(url);
+    expect(props.onShouldStartLoadWithRequest({ url })).toBe(false);
+    act(() => props.onOpenWindow({ nativeEvent: { targetUrl: url } }));
+    expect(mockOpenNovel).toHaveBeenCalledTimes(3);
+  });
+
+  it('ignores a browser error for a link that no app can open', async () => {
+    jest
+      .mocked(Linking.openURL)
+      .mockRejectedValueOnce(new Error('unsupported'));
+    const props = mount().UNSAFE_getByType(WebView).props;
+
+    await act(async () =>
+      props.onOpenWindow({ nativeEvent: { targetUrl: 'unknown:example' } }),
+    );
+
+    expect(Linking.openURL).toHaveBeenCalledWith('unknown:example');
+  });
 });
