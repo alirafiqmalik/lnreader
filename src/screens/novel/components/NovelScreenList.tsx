@@ -179,10 +179,7 @@ const NovelScreenList = ({
       if (!fetchedNovel) {
         return;
       }
-      navigation.navigate('ReaderStack', {
-        screen: 'Chapter',
-        params: { novel: fetchedNovel, chapter },
-      });
+      navigation.navigate('Chapter', { novel: fetchedNovel, chapter });
     },
     [navigation, fetchedNovel],
   );
@@ -279,10 +276,7 @@ const NovelScreenList = ({
   const onFabPress = useCallback(() => {
     const chapter = lastRead ?? firstUnreadChapter;
     if (chapter && fetchedNovel) {
-      navigation.navigate('ReaderStack', {
-        screen: 'Chapter',
-        params: { novel: fetchedNovel, chapter },
-      });
+      navigation.navigate('Chapter', { novel: fetchedNovel, chapter });
     }
   }, [lastRead, firstUnreadChapter, fetchedNovel, navigation]);
 

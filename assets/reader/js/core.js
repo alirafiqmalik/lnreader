@@ -861,7 +861,34 @@ window.addEventListener('load', () => {
     }
     return 'center';
   };
+  let lastLinkTap = -Infinity;
   document.onclick = e => {
+    // A link opens its target (in the app for novel links), so the tap must not
+    // also toggle the reader controls or turn the page.
+    const link = e.target.closest('a[href]');
+    if (link) {
+      if (e.defaultPrevented) return;
+      // A footnote or another link inside this document only scrolls the page.
+      const inPage = link.href.split('#')[0] === location.href.split('#')[0];
+      if (inPage) return;
+      // While the app opens the first tap, a second tap would open it again.
+      if (Date.now() - lastLinkTap < 1000) {
+        e.preventDefault();
+        return;
+      }
+      lastLinkTap = Date.now();
+      // The WebView waits only 250 ms for the app to answer a load request and
+      // then loads the page. A busy app misses that, so a web link goes to the
+      // app as a message.
+      if (/^https?:/i.test(link.href)) {
+        e.preventDefault();
+        reader.post({
+          type: 'link',
+          data: { url: link.href, target: link.target },
+        });
+      }
+      return;
+    }
     if (Date.now() < pageReader.ignoreClickUntil) {
       return;
     }

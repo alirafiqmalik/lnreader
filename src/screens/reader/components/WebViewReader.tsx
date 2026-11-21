@@ -27,16 +27,15 @@ import { PLUGIN_STORAGE } from '@utils/Storages';
 import { useChapterContext } from '../ChapterContext';
 import { ReaderSearchResult } from '../types';
 import { useTtsSession } from '../hooks/useTtsSession';
+import useNovelLinkNavigation from '../hooks/useNovelLinkNavigation';
 import type { TtsSettings } from '@modules/nitro-tts';
 import { ChapterInfo } from '@database/types';
 import { Dialog } from '@components/Dialog';
 import { TextInput } from 'react-native-paper';
 import useCustomCode from './Hooks/useCustomCode';
 import useTextModifications from './Hooks/useTextModifications';
-import {
-  isChapterRefreshUrl,
-  isPluginIssueReportUrl,
-} from '../utils/sanitizeChapterText';
+import { buildReaderChromeScript } from '../utils/buildReaderChromeScript';
+import { createReaderLinkHandlers } from '../utils/handleReaderLink';
 
 export type WebViewPostEvent = {
   type: string;
@@ -47,6 +46,8 @@ export type WebViewPostEvent = {
 };
 
 type WebViewReaderProps = {
+  hiddenRef: React.RefObject<boolean>;
+  searchVisibleRef: React.RefObject<boolean>;
   onPress(): void;
   onTouchStart?(): void;
   onSearchResult(result: ReaderSearchResult): void;
@@ -129,6 +130,8 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
   onTouchStart,
   onSearchResult,
   searchTextRef,
+  searchVisibleRef,
+  hiddenRef,
 }) => {
   const {
     novel,
@@ -144,6 +147,16 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
     refetch,
   } = useChapterContext();
   const theme = useTheme();
+  const openNovelLink = useNovelLinkNavigation(novel);
+  const linkHandlers = () =>
+    createReaderLinkHandlers({
+      openNovel: openNovelLink,
+      openExternal: url => {
+        void Linking.openURL(url).catch(() => undefined);
+      },
+      inject: script => webViewRef.current?.injectJavaScript(script),
+      refresh: refetch,
+    });
   const initialReaderSettings = useMemo(
     () => ({
       ...initialChapterReaderSettings,
@@ -462,18 +475,23 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
         showsVerticalScrollIndicator={false}
         javaScriptEnabled={true}
         webviewDebuggingEnabled={__DEV__}
-        onShouldStartLoadWithRequest={({ url }) => {
-          if (isPluginIssueReportUrl(url)) {
-            void Linking.openURL(url);
-            return false;
-          }
-          if (isChapterRefreshUrl(url)) {
-            refetch();
-            return false;
-          }
-          return true;
+        onShouldStartLoadWithRequest={({ url }) =>
+          linkHandlers().shouldStartLoad(url)
+        }
+        // Android sends a target="_blank" link to the browser unless the app
+        // handles the new window, so the app sends other links there itself.
+        onOpenWindow={({ nativeEvent: { targetUrl } }) => {
+          linkHandlers().openWindow(targetUrl);
         }}
         onLoadEnd={() => {
+          // A new chapter document starts with its controls hidden, so send
+          // the app's controls state to it.
+          webViewRef.current?.injectJavaScript(
+            buildReaderChromeScript(
+              hiddenRef.current,
+              searchVisibleRef.current,
+            ),
+          );
           webViewRef.current?.injectJavaScript(
             `if (window.reader && window.reader.batteryLevel) {
             window.reader.batteryLevel.val = ${lastKnownBatteryLevel};
@@ -511,6 +529,9 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
           __DEV__ && onLogMessage(ev);
           const event: WebViewPostEvent = JSON.parse(ev.nativeEvent.data);
           switch (event.type) {
+            case 'link':
+              linkHandlers().handlePage(event.data);
+              break;
             case 'tts-queue': {
               const payload = event.data as
                 | { queue?: unknown; startIndex?: unknown }
