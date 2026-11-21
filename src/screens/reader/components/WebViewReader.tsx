@@ -38,6 +38,7 @@ import {
   isChapterRefreshUrl,
   isPluginIssueReportUrl,
 } from '../utils/sanitizeChapterText';
+import { buildReaderChromeScript } from '../utils/buildReaderChromeScript';
 
 export type WebViewPostEvent = {
   type: string;
@@ -48,6 +49,8 @@ export type WebViewPostEvent = {
 };
 
 type WebViewReaderProps = {
+  hiddenRef: React.RefObject<boolean>;
+  searchVisibleRef: React.RefObject<boolean>;
   onPress(): void;
   onTouchStart?(): void;
   onSearchResult(result: ReaderSearchResult): void;
@@ -130,6 +133,8 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
   onTouchStart,
   onSearchResult,
   searchTextRef,
+  searchVisibleRef,
+  hiddenRef,
 }) => {
   const {
     novel,
@@ -483,6 +488,14 @@ const WebViewReader: React.FC<WebViewReaderProps> = ({
           }
         }}
         onLoadEnd={() => {
+          // A new chapter document starts with its controls hidden, so send
+          // the app's controls state to it.
+          webViewRef.current?.injectJavaScript(
+            buildReaderChromeScript(
+              hiddenRef.current,
+              searchVisibleRef.current,
+            ),
+          );
           webViewRef.current?.injectJavaScript(
             `if (window.reader && window.reader.batteryLevel) {
             window.reader.batteryLevel.val = ${lastKnownBatteryLevel};

@@ -544,6 +544,7 @@ export default function useChapter(
       error,
       loading,
       chapterText,
+      hiddenRef,
       setHidden,
       saveProgress,
       hideHeader,
